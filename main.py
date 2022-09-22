@@ -108,7 +108,7 @@ async def root():
                 <div class="container position-relative overflow-hidden p-3">
                     <figure class="text-end">
                         <blockquote class="blockquote">
-                            <p>Thương nhau mà sống</p>
+                            <p>Các vị anh hùng hãy cẩn trọng. Những trang sử này dễ gây mất hạnh phúc gia đình.</p>
                         </blockquote>
                         <figcaption class="blockquote-footer" id="soLuong">
                         </figcaption>
