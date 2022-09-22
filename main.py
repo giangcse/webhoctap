@@ -53,7 +53,7 @@ def getInfoUser_instagram(url_profile):
         url_pic = (str(data)[idx+19:idx+500].split('"')[0].replace('\\', ''))
 
         # mycol.insert_one({"user_name": str(info), "profile_picture": str(url_pic), "url_profile": url_profile})
-        cursor.execute('''INSERT INTO data VALUES('''+str(info)+''', '''+str(url_pic)''', '''+url_profile+''')''')
+        cursor.execute('INSERT INTO data VALUES("'+str(info)+'", "'+str(url_pic)+'", "'+str(url_profile)+'")')
         conn.commit()
     except Exception as e:
         return e
