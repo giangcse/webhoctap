@@ -152,26 +152,26 @@ async def root():
                 function addNew(){
                     let d = document.getElementById("url-input").value;
                     const form = new FormData();
-                    form.append("url", d);
+                form.append("url", "abc.com");
 
-                    const settings = {
-                    "async": true,
-                    "crossDomain": true,
-                    "url": "https://www.giangpt.dev/add",
-                    "method": "GET",
-                    "headers": {
-                        "Accept": "*/*",
-                        // "User-Agent": "Thunder Client (https://www.thunderclient.com)"
-                    },
-                    "processData": false,
-                    "contentType": false,
-                    "mimeType": "multipart/form-data",
-                    "data": form
-                    };
+                const settings = {
+                "async": true,
+                "crossDomain": true,
+                "url": "https://www.giangpt.dev/add",
+                "method": "GET",
+                "headers": {
+                    "Accept": "*/*",
+                    "User-Agent": "Thunder Client (https://www.thunderclient.com)"
+                },
+                "processData": false,
+                "contentType": false,
+                "mimeType": "multipart/form-data",
+                "data": form
+                };
 
-                    $.ajax(settings).done(function (response) {
-                    console.log(response);
-                    });
+                $.ajax(settings).done(function (response) {
+                console.log(response);
+                });
                 }
 
                 function loadData(){
@@ -184,7 +184,7 @@ async def root():
                             // console.log(data)
                             data = eval(data)
                             data.forEach(element => {
-                                console.log(element)
+                                // console.log(element);
                                 str += '<div class="col-sm-3"><div class="card mb-3"><img src="'+element.profile_picture+'" class="card-img-top"><div class="card-img-overlay"><a href="'+element.url_profile+'" class="card-title" style="color: #ffffff;" target="_blank"><i class="bi bi-instagram"></i> '+element.user_name+'</a></div></div></div>';
                             });
                             document.getElementById("main").innerHTML = str;
