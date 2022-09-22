@@ -2,7 +2,6 @@ import requests
 import json
 import pandas as pd
 import uvicorn
-# import pymongo
 import sqlite3
 import validators
 
@@ -28,26 +27,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
-
-
-# myclient = pymongo.MongoClient('mongodb://localhost:27017')
-# mydb = myclient['tailieuhoctap']
-# mycol = mydb['instagram']
 conn = sqlite3.connect('tailieuhoctap.db')
 cursor = conn.cursor()
 
-headersList = {
- "Accept": "*/*",
- "User-Agent": "Thunder Client (https://www.thunderclient.com)" 
-}
-payload = ""
 
 class Data(BaseModel):
     url:str
 
 def getInfoUser_instagram(url_profile):
+    headersList = {
+        "Accept": "*/*",
+    }
+    payload = ""
     try:
         response = requests.request("GET", url_profile, data=payload,  headers=headersList)
 
@@ -58,7 +49,7 @@ def getInfoUser_instagram(url_profile):
         url_pic = (str(data)[idx+19:idx+500].split('"')[0].replace('\\', ''))
 
         # mycol.insert_one({"user_name": str(info), "profile_picture": str(url_pic), "url_profile": url_profile})
-        cursor.execute('INSERT INTO data VALUES("'+str(info)+'", "'+str(url_pic)+'", "'+str(url_profile)+'")')
+        cursor.execute('INSERT OR IGNORE INTO data VALUES("'+str(info)+'", "'+str(url_pic)+'", "'+str(url_profile)+'")')
         conn.commit()
     except Exception as e:
         return e
@@ -115,6 +106,13 @@ async def root():
             </header>
             <main>
                 <div class="container position-relative overflow-hidden p-3">
+                    <figure class="text-end">
+                        <blockquote class="blockquote">
+                            <p>Thương nhau mà sống</p>
+                        </blockquote>
+                        <figcaption class="blockquote-footer" id="soLuong">
+                        </figcaption>
+                    </figure>
                     <div class="row" id="main">
                         
                     </div>
@@ -127,67 +125,75 @@ async def root():
             <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                 <div class="modal-content">
-                    <form>
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Đóng góp link</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Đóng góp link</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="input-group flex-nowrap">
+                            <span class="input-group-text" id="addon-wrapping"><i class="bi bi-instagram"></i></span>
+                            <input type="text" class="form-control" placeholder="Profile URL" aria-label="Profile URL" aria-describedby="addon-wrapping" id="url-input" required>
                         </div>
-                        <div class="modal-body">
-                            <div class="input-group flex-nowrap">
-                                <span class="input-group-text" id="addon-wrapping"><i class="bi bi-instagram"></i></span>
-                                <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="addon-wrapping" id="url-input">
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                            <button type="button" class="btn btn-primary" onclick="addNew()">Thêm</button>
-                        </div>
-                    </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-primary" onclick="addNew()">Thêm</button>
+                    </div>
                 </div>
+                </div>
+            </div>
+
+            <div class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true" id="notify">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        Đã đóng góp link thành công!
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
             </div>
 
             <script>
                 loadData();
                 function addNew(){
-                    let d = document.getElementById("url-input").value;
-                    const form = new FormData();
-                    form.append("url", d);
-
+                    let inp = document.getElementById("url-input");
+                    let d = inp.value;
                     const settings = {
-                    "async": true,
-                    "crossDomain": true,
-                    "url": "https://www.giangpt.dev/add",
-                    "method": "GET",
-                    "headers": {
-                        "Accept": "*/*",
-                        // "User-Agent": "Thunder Client (https://www.thunderclient.com)"
-                    },
-                    "processData": false,
-                    "contentType": false,
-                    "mimeType": "multipart/form-data",
-                    "data": form
+                        "async": true,
+                        "crossDomain": true,
+                        "url": "/add?url=" + d,
+                        "method": "GET",
+                        "headers": {
+                            "Accept": "*/*",
+                        }
                     };
-
-                    $.ajax(settings).done(function (response) {
-                    console.log(response);
-                    });
+                    if(d == ''){
+                        inp.style = 'border: 2px solid red; border-radius: 4px;';
+                    }else{
+                        inp.style = '';
+                        $.ajax(settings).done(function (response) {
+                            if(response.status == 'error'){
+                                inp.style = 'border: 2px solid red; border-radius: 4px;';
+                            }else{
+                                loadData();
+                            }
+                        });
+                    }
                 }
 
                 function loadData(){
                     let str = ''
                     $.ajax({
-                        url: 'https://www.giangpt.dev/fillData',
+                        url: '/get_data',
                         data: '',
                         type: 'GET',
                         success: function(data){
-                            // console.log(data)
                             data = eval(data)
                             data.forEach(element => {
-                                console.log(element)
+                                element
                                 str += '<div class="col-sm-3"><div class="card mb-3"><img src="'+element.profile_picture+'" class="card-img-top"><div class="card-img-overlay"><a href="'+element.url_profile+'" class="card-title" style="color: #ffffff;" target="_blank"><i class="bi bi-instagram"></i> '+element.user_name+'</a></div></div></div>';
                             });
                             document.getElementById("main").innerHTML = str;
+                            document.getElementById("soLuong").innerText = 'Hiện tại đã có ' + data.length + ' đóng góp từ các vị anh hùng';
                         }
                     });
                 }
@@ -196,7 +202,7 @@ async def root():
     """
     return HTMLResponse(content=html_content, status_code=200)
 
-@app.get('/fillData')
+@app.get('/get_data')
 async def fill_data():
     data = []
     for d in cursor.execute('''SELECT * FROM data''').fetchall():
@@ -204,12 +210,18 @@ async def fill_data():
     return (json.loads(json.dumps(data)))
 
 @app.get('/add')
-async def add(url: str = Form(...)):
-    return {"url": url}
+async def add(url: str):
+    if(validators.url(url)):
+        if('instagram' in str(url)):
+            getInfoUser_instagram(url)
+            return json.loads(json.dumps({'status': 'ok'}))
+    else:
+        return json.loads(json.dumps({'status': 'error'}))
 
 def saveToDB():
     try:
         urls = readFile('url.csv')
+        cursor.execute('''CREATE TABLE data(user_name VARCHAR2, url_profile VARCHAR2, profile_picture VARCHAR2, UNIQUE(url_profile))''')
         data = []
         for url in urls:
             data.append(getInfoUser_instagram(url))
@@ -218,5 +230,5 @@ def saveToDB():
         return e
 
 if __name__=='__main__':
-    # saveToDB()
-    uvicorn.run("main:app", host="0.0.0.0", port=80)
+    saveToDB()
+    uvicorn.run("main:app", host="0.0.0.0", port=88, reload=True)
