@@ -105,12 +105,14 @@
         function loadData(){
             let str = ''
             $.ajax({
-                url: 'http://127.0.0.1:81/',
+                url: 'https://www.giangpt.dev/fillData',
                 data: '',
                 type: 'GET',
                 success: function(data){
+                    // console.log(data)
                     data = eval(data)
                     data.forEach(element => {
+                        console.log(element)
                         str += '<div class="col-sm-3"><div class="card mb-3"><img src="'+element.profile_picture+'" class="card-img-top"><div class="card-img-overlay"><a href="'+element.url_profile+'" class="card-title" style="color: #ffffff;" target="_blank"><i class="bi bi-instagram"></i> '+element.user_name+'</a></div></div></div>';
                     });
                     document.getElementById("main").innerHTML = str;
