@@ -157,7 +157,7 @@ async def root():
                     const settings = {
                     "async": true,
                     "crossDomain": true,
-                    "url": "localhost:81/add",
+                    "url": "https://www.giangpt.dev/add",
                     "method": "GET",
                     "headers": {
                         "Accept": "*/*",
