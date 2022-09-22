@@ -14,7 +14,7 @@ from fastapi import responses
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from selenium import webdriver
 
 app = FastAPI()
 origins = ["*"]
@@ -30,9 +30,19 @@ app.add_middleware(
 conn = sqlite3.connect('tailieuhoctap.db')
 cursor = conn.cursor()
 
-
-class Data(BaseModel):
-    url:str
+def getInfoUser_tiktok(url_profile):
+    driver = webdriver.Chrome(executable_path='chromedriver.exe')
+    try:
+        driver.get(url_profile)
+        profile_picture = driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[2]/div/div[1]/div[1]/div[1]/span/img').get_attribute("src")
+        title = driver.title
+        user_name = str(title)[:str(title).index("TikTok")]
+        # print(user_name, profile_picture)
+        cursor.execute('INSERT OR IGNORE INTO data VALUES("'+str(user_name)+'", "'+str(profile_picture)+'", "'+str(url_profile)+'")')
+        conn.commit()
+        driver.quit()
+    except Exception as e:
+        return e
 
 def getInfoUser_instagram(url_profile):
     headersList = {
@@ -48,7 +58,6 @@ def getInfoUser_instagram(url_profile):
         idx = (str(data).index('"profile_pic_url":'))
         url_pic = (str(data)[idx+19:idx+500].split('"')[0].replace('\\', ''))
 
-        # mycol.insert_one({"user_name": str(info), "profile_picture": str(url_pic), "url_profile": url_profile})
         cursor.execute('INSERT OR IGNORE INTO data VALUES("'+str(info)+'", "'+str(url_pic)+'", "'+str(url_profile)+'")')
         conn.commit()
     except Exception as e:
@@ -181,7 +190,9 @@ async def root():
                 }
 
                 function loadData(){
-                    let str = ''
+                    let str = '';
+                    let insta = '<i class="bi bi-instagram"></i> ';
+                    let tiktok = '<i class="bi bi-tiktok"></i>';
                     $.ajax({
                         url: '/get_data',
                         data: '',
@@ -189,8 +200,15 @@ async def root():
                         success: function(data){
                             data = eval(data)
                             data.forEach(element => {
-                                element
-                                str += '<div class="col-sm-3"><div class="card mb-3"><img src="'+element.profile_picture+'" class="card-img-top"><div class="card-img-overlay"><a href="'+element.url_profile+'" class="card-title" style="color: #ffffff;" target="_blank"><i class="bi bi-instagram"></i> '+element.user_name+'</a></div></div></div>';
+                                element;
+                                let link = element.url_profile.toString();
+                                let icon = '';
+                                if(link.includes("instagram")){
+                                    icon = insta;
+                                }else if(link.includes("tiktok")){
+                                    icon = tiktok;
+                                }
+                                str += '<div class="col-sm-3"><div class="card mb-3"><img src="'+element.profile_picture+'" class="card-img-top"><div class="card-img-overlay"><a href="'+element.url_profile+'" class="card-title" style="color: #ffffff;" target="_blank">'+icon+' '+element.user_name+'</a></div></div></div>';
                             });
                             document.getElementById("main").innerHTML = str;
                             document.getElementById("soLuong").innerText = 'Hiện tại đã có ' + data.length + ' đóng góp từ các vị anh hùng';
@@ -215,6 +233,9 @@ async def add(url: str):
         if('instagram' in str(url)):
             getInfoUser_instagram(url)
             return json.loads(json.dumps({'status': 'ok'}))
+        elif('tiktok' in str(url)):
+            getInfoUser_tiktok(url)
+            return json.loads(json.dumps({'status': 'ok'}))
     else:
         return json.loads(json.dumps({'status': 'error'}))
 
@@ -230,5 +251,5 @@ def saveToDB():
         return e
 
 if __name__=='__main__':
-    saveToDB()
+    # saveToDB()
     uvicorn.run("main:app", host="0.0.0.0", port=88, reload=True)
