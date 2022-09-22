@@ -2,7 +2,8 @@ import requests
 import json
 import pandas as pd
 import uvicorn
-import pymongo
+# import pymongo
+import sqlite3
 import validators
 
 from bs4 import BeautifulSoup
@@ -26,9 +27,11 @@ app.add_middleware(
 )
 
 
-myclient = pymongo.MongoClient('mongodb://localhost:27017')
-mydb = myclient['tailieuhoctap']
-mycol = mydb['instagram']
+# myclient = pymongo.MongoClient('mongodb://localhost:27017')
+# mydb = myclient['tailieuhoctap']
+# mycol = mydb['instagram']
+conn = sqlite3.connect('tailieuhoctap.db')
+cursor = conn.cursor()
 
 headersList = {
  "Accept": "*/*",
@@ -49,7 +52,9 @@ def getInfoUser_instagram(url_profile):
         idx = (str(data).index('"profile_pic_url":'))
         url_pic = (str(data)[idx+19:idx+500].split('"')[0].replace('\\', ''))
 
-        mycol.insert_one({"user_name": str(info), "profile_picture": str(url_pic), "url_profile": url_profile})
+        # mycol.insert_one({"user_name": str(info), "profile_picture": str(url_pic), "url_profile": url_profile})
+        cursor.execute('''INSERT INTO data VALUES('''+str(info)+''', '''+str(url_pic)''', '''+url_profile+''')''')
+        conn.commit()
     except Exception as e:
         return e
 
@@ -60,8 +65,8 @@ def readFile(file_path):
 @app.get('/')
 async def root():
     data = []
-    for d in mycol.find({},{'_id':0}):
-        data.append(d)
+    for d in cursor.execute('''SELECT * FROM data'''):
+        data.append({"user_name": str(d[0]), "profile_picture": str(d[1]), "url_profile": d[2]})
 
     return (json.loads(json.dumps(data)))
 
