@@ -22,7 +22,8 @@ class Via_Telegram:
         self.connection_db = sqlite3.connect(self.database, check_same_thread=False)
         self.cursor = self.connection_db.cursor()
         # Chrome driver
-        self.driver = webdriver.Chrome(executable_path='chromedriver.exe')
+        # self.driver = webdriver.Chrome(executable_path='chromedriver.exe')
+        self.driver = webdriver.Chrome(executable_path = '/usr/lib/chromium-browser/chromedriver')
 
     # Get dữ liệu từ Instagram
     def _get_info_instagram(self, url_instagram, contributor):
