@@ -131,7 +131,6 @@ class Via_api:
 
                 <script>
                     loadData();
-
                     function loadData(){
                         let str = '';
                         let insta = '<i class="bi bi-instagram"></i> ';
@@ -144,14 +143,14 @@ class Via_api:
                                 data = eval(data)
                                 data.forEach(element => {
                                     element;
-                                    let link = element.url_profile.toString();
+                                    let link = element.url.toString();
                                     let icon = '';
                                     if(link.includes("instagram")){
                                         icon = insta;
                                     }else if(link.includes("tiktok")){
                                         icon = tiktok;
                                     }
-                                    str += '<div class="col-sm-3"><div class="card mb-3"><a href="'+element.url_profile+'" class="card-title" style="color: #ffffff;" target="_blank"><img src="'+element.profile_picture+'" class="card-img-top"><div class="card-img-overlay">'+icon+' '+element.user_name+'</div></a></div></div>';
+                                    str += '<div class="col-sm-3"><div class="card mb-3"><a href="'+element.link+'" class="card-title" style="color: #ffffff;" target="_blank"><img src="'+element.url_pic+'" class="card-img-top"><div class="card-img-overlay">'+icon+' '+element.user_name+'</div></a></div></div>';
                                 });
                                 document.getElementById("main").innerHTML = str;
                                 document.getElementById("soLuong").innerText = 'Hiện tại đã có ' + data.length + ' đóng góp từ các vị anh hùng';
