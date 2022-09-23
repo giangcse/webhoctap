@@ -82,38 +82,12 @@
 
             <script>
                 loadData();
-                function addNew(){
-                    let inp = document.getElementById("url-input");
-                    let d = inp.value;
-                    const settings = {
-                        "async": true,
-                        "crossDomain": true,
-                        "url": "/add?url=" + d,
-                        "method": "GET",
-                        "headers": {
-                            "Accept": "*/*",
-                        }
-                    };
-                    if(d == ''){
-                        inp.style = 'border: 2px solid red; border-radius: 4px;';
-                    }else{
-                        inp.style = '';
-                        $.ajax(settings).done(function (response) {
-                            if(response.status == 'error'){
-                                inp.style = 'border: 2px solid red; border-radius: 4px;';
-                            }else{
-                                loadData();
-                            }
-                        });
-                    }
-                }
-
                 function loadData(){
                     let str = '';
                     let insta = '<i class="bi bi-instagram"></i> ';
                     let tiktok = '<i class="bi bi-tiktok"></i>';
                     $.ajax({
-                        url: 'http://127.0.0.1:8000/get_data',
+                        url: 'https://giangpt.dev:8000/get_data',
                         data: '',
                         type: 'GET',
                         success: function(data){
