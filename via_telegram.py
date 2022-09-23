@@ -23,7 +23,7 @@ class Via_Telegram:
         self.cursor = self.connection_db.cursor()
         # Chrome driver
         # self.driver = webdriver.Chrome(executable_path='chromedriver.exe')
-        self.driver = webdriver.Chrome(executable_path = '/usr/lib/chromium-browser/chromedriver')
+        # self.driver = webdriver.Chrome(executable_path = '/usr/lib/chromium-browser/chromedriver')
 
     # Get dữ liệu từ Instagram
     def _get_info_instagram(self, url_instagram, contributor):
@@ -47,19 +47,19 @@ class Via_Telegram:
             return 0
 
     # Get dữ liệu từ Tiktok
-    def _get_info_tiktok(self, url_tiktok, contributor):
-        try:
-            self.driver.get(url_tiktok)
-            profile_picture = self.driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[2]/div/div[1]/div[1]/div[1]/span/img').get_attribute("src")
-            title = self.driver.title
-            user_name = str(title)[:str(title).index("TikTok")]
+    # def _get_info_tiktok(self, url_tiktok, contributor):
+    #     try:
+    #         self.driver.get(url_tiktok)
+    #         profile_picture = self.driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[2]/div/div[1]/div[1]/div[1]/span/img').get_attribute("src")
+    #         title = self.driver.title
+    #         user_name = str(title)[:str(title).index("TikTok")]
             
-            self.cursor.execute('INSERT OR IGNORE INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_tiktok, user_name.strip(), profile_picture, contributor))
-            self.connection_db.commit()
-            self.driver.quit()
-            return 1
-        except Exception as e:
-            return 0
+    #         self.cursor.execute('INSERT OR IGNORE INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_tiktok, user_name.strip(), profile_picture, contributor))
+    #         self.connection_db.commit()
+    #         self.driver.quit()
+    #         return 1
+    #     except Exception as e:
+    #         return 0
 
     # Thêm mới dữ liệu
     def _add_info(self, message):
@@ -71,9 +71,9 @@ class Via_Telegram:
                     if('instagram' in str(url).lower()):
                         self._get_info_instagram(url, contributor)
                         self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
-                    elif('tiktok' in str(url).lower()):
-                        self._get_info_tiktok(url, contributor)
-                        self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
+                    # elif('tiktok' in str(url).lower()):
+                    #     self._get_info_tiktok(url, contributor)
+                    #     self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
                     else:
                         self.bot.reply_to(message, '<i>Hiện tại hệ thống chưa hỗ trợ trang web này. Cảm ơn vì sự đóng góp của bạn!</i>')
             except Exception as e:
