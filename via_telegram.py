@@ -39,10 +39,12 @@ class Via_Telegram:
 
             idx = (str(data).index('"profile_pic_url":'))
             url_pic = (str(data)[idx+19:idx+500].split('"')[0].replace('\\', ''))
-
-            self.cursor.execute('INSERT OR IGNORE INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_instagram, info.strip(), url_pic, contributor))
-            self.connection_db.commit()
-            return 1
+            if (len(self.cursor.execute('SELECT ID FROM main WHERE URL = ?', url_instagram)) > 0):
+                self.cursor.execute('INSERT OR IGNORE INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_instagram, info.strip(), url_pic, contributor))
+                self.connection_db.commit()
+                return 1    
+            else:
+                return 0
         except Exception as e:
             return 0
 
@@ -69,8 +71,11 @@ class Via_Telegram:
                 contributor = str(message.from_user.username)
                 if(validators.url(url)):
                     if('instagram' in str(url).lower()):
-                        self._get_info_instagram(url, contributor)
-                        self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
+                        result = self._get_info_instagram(url, contributor)
+                        if result == 1:
+                            self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
+                        else:
+                            self.bot.reply_to(message, "Sorry bạn, hình như profile đã được vị cao nhân nào đó đóng góp trước. Cảm ơn sự đóng góp của bạn!")
                     # elif('tiktok' in str(url).lower()):
                     #     self._get_info_tiktok(url, contributor)
                     #     self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
