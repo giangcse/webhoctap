@@ -39,7 +39,6 @@ class Via_api:
         response = []
         for i in data.fetchall():
             response.append({"id": i[0], "url": i[1], "user_name": i[2], "url_pic": i[3], "contributor": i[4]})
-            print({"id": i[1], "url": i[2], "url_pic": i[3], "contributor": i[4]})
         return (json.loads(json.dumps(response)))
 
 
