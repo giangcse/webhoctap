@@ -16,6 +16,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from selenium import webdriver
 
+# FastAPI config
 app = FastAPI()
 origins = ["*"]
 
@@ -27,6 +28,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# SQLite3 Config
 conn = sqlite3.connect('tailieuhoctap.db')
 cursor = conn.cursor()
 
@@ -152,15 +154,6 @@ async def root():
                 </div>
             </div>
 
-            <div class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true" id="notify">
-                <div class="d-flex">
-                    <div class="toast-body">
-                        Đã đóng góp link thành công!
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>
-
             <script>
                 loadData();
                 function addNew(){
@@ -208,7 +201,7 @@ async def root():
                                 }else if(link.includes("tiktok")){
                                     icon = tiktok;
                                 }
-                                str += '<div class="col-sm-3"><div class="card mb-3"><img src="'+element.profile_picture+'" class="card-img-top"><div class="card-img-overlay"><a href="'+element.url_profile+'" class="card-title" style="color: #ffffff;" target="_blank">'+icon+' '+element.user_name+'</a></div></div></div>';
+                                str += '<div class="col-sm-3"><div class="card mb-3"><a href="'+element.url_profile+'" class="card-title" style="color: #ffffff;" target="_blank"><img src="'+element.profile_picture+'" class="card-img-top"><div class="card-img-overlay">'+icon+' '+element.user_name+'</div></a></div></div>';
                             });
                             document.getElementById("main").innerHTML = str;
                             document.getElementById("soLuong").innerText = 'Hiện tại đã có ' + data.length + ' đóng góp từ các vị anh hùng';
@@ -239,6 +232,25 @@ async def add(url: str):
     else:
         return json.loads(json.dumps({'status': 'error'}))
 
+@app.get('/delete')
+async def delete(url: str, otp: int):
+    find = cursor.execute('SELECT * FROM data WHERE url_profile=?', (url,))
+    row = cursor.fetchone()
+
+    data = json.loads(open('otp.json', 'r').read())
+    OTP = data['otp']
+
+    if(row is not None):
+        if(otp == OTP):
+            cursor.execute('DELETE FROM data WHERE url_profile=?', (url,))
+            with open('otp.json', 'w') as f:
+                f.write(json.dumps({"otp": 0}, indent=4))
+            return 1
+        else:
+            return 2
+    else:
+        return 3
+
 def saveToDB():
     try:
         urls = readFile('url.csv')
@@ -251,5 +263,4 @@ def saveToDB():
         return e
 
 if __name__=='__main__':
-    # saveToDB()
     uvicorn.run("main:app", host="0.0.0.0", port=88, reload=True)
