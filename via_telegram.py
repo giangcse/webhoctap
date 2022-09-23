@@ -20,7 +20,13 @@ class Via_Telegram:
         # Handle message /rank
         @self.bot.message_handler(commands=["rank"])
         def rank(message):
-            print(self._rank_user(message))
+            rank_users = self._rank_user(message)
+            content = '<b>DANH SÁCH ĐÓNG GÓP</b>\n'
+            i = 1
+            for u in rank_users:
+                content += str(i) + '. ' + u['contributor'] + ' với ' + str(u['amount']) + ' đóng góp.\n'
+            self.bot.reply_to(message, content)
+
         # Khởi tạo thông tin kết nối đến Database
         self.database = 'data.db'
         self.connection_db = sqlite3.connect(self.database, check_same_thread=False)
@@ -94,9 +100,10 @@ class Via_Telegram:
         if('/rank' in str(message.text).lower()):
             try:
                 rank_users = []
-                result = self.cursor.execute('SELECT COUNT(URL) FROM main WHERE CONTRIBUTORS = ?', (str(message.from_user.username),))
-                rank_users.append(result.fetchone()[0])
-                return rank_users.sort(reverse=False)
+                result = self.cursor.execute('SELECT COUNT(CONTRIBUTORS), CONTRIBUTORS FROM main GROUP BY CONTRIBUTORS')
+                for u in result.fetchall():
+                    rank_users.append({"contributor": u[1], "amount": u[0]})
+                return sorted(rank_users, key=lambda d: d['amount'], reverse=True) 
             except Exception as e:
                 return e
 
