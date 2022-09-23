@@ -17,6 +17,10 @@ class Via_Telegram:
         @self.bot.message_handler(commands=["add"])
         def add_info(message):
             self._add_info(message)
+        # Handle message /rank
+        @self.bot.message_handler(commands=["rank"])
+        def rank(message):
+            print(self._rank_user(message))
         # Khởi tạo thông tin kết nối đến Database
         self.database = 'data.db'
         self.connection_db = sqlite3.connect(self.database, check_same_thread=False)
@@ -39,14 +43,15 @@ class Via_Telegram:
 
             idx = (str(data).index('"profile_pic_url":'))
             url_pic = (str(data)[idx+19:idx+500].split('"')[0].replace('\\', ''))
-            if (len(self.cursor.execute('SELECT ID FROM main WHERE URL = ?', url_instagram)) > 0):
-                self.cursor.execute('INSERT OR IGNORE INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_instagram, info.strip(), url_pic, contributor))
+            result = self.cursor.execute('SELECT COUNT(URL) FROM main WHERE URL = ?', (str(url_instagram),))
+            if (int(result.fetchone()[0]) == 0):
+                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_instagram, info.strip(), url_pic, contributor))
                 self.connection_db.commit()
                 return 1    
             else:
                 return 0
         except Exception as e:
-            return 0
+            return 2
 
     # Get dữ liệu từ Tiktok
     # def _get_info_tiktok(self, url_tiktok, contributor):
@@ -74,7 +79,7 @@ class Via_Telegram:
                         result = self._get_info_instagram(url, contributor)
                         if result == 1:
                             self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
-                        else:
+                        elif result == 0:
                             self.bot.reply_to(message, "Sorry bạn, hình như profile đã được vị cao nhân nào đó đóng góp trước. Cảm ơn sự đóng góp của bạn!")
                     # elif('tiktok' in str(url).lower()):
                     #     self._get_info_tiktok(url, contributor)
@@ -83,6 +88,17 @@ class Via_Telegram:
                         self.bot.reply_to(message, '<i>Hiện tại hệ thống chưa hỗ trợ trang web này. Cảm ơn vì sự đóng góp của bạn!</i>')
             except Exception as e:
                 self.bot.reply_to(message, 'Vui lòng điền URL hợp lệ!')
+
+    # Xếp hạng đóng góp
+    def _rank_user(self, message):
+        if('/rank' in str(message.text).lower()):
+            try:
+                rank_users = []
+                result = self.cursor.execute('SELECT COUNT(URL) FROM main WHERE CONTRIBUTORS = ?', (str(message.from_user.username),))
+                rank_users.append(result.fetchone()[0])
+                return rank_users.sort(reverse=False)
+            except Exception as e:
+                return e
 
 if __name__ == '__main__':
     via_tele = Via_Telegram()
