@@ -1,3 +1,4 @@
+import profile
 import telebot
 import random
 import json
@@ -6,6 +7,7 @@ import validators
 import requests
 
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 
 class Via_Telegram:
@@ -32,8 +34,9 @@ class Via_Telegram:
         self.connection_db = sqlite3.connect(self.database, check_same_thread=False)
         self.cursor = self.connection_db.cursor()
         # Chrome driver
-        # self.driver = webdriver.Chrome(executable_path='chromedriver.exe')
-        # self.driver = webdriver.Chrome(executable_path = '/usr/lib/chromium-browser/chromedriver')
+        self.options = webdriver.ChromeOptions()
+        self.options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        self.driver = webdriver.Chrome(options=self.options)
 
     # Get dữ liệu từ Instagram
     def _get_info_instagram(self, url_instagram, contributor):
@@ -60,19 +63,20 @@ class Via_Telegram:
             return 2
 
     # Get dữ liệu từ Tiktok
-    # def _get_info_tiktok(self, url_tiktok, contributor):
-    #     try:
-    #         self.driver.get(url_tiktok)
-    #         profile_picture = self.driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[2]/div/div[1]/div[1]/div[1]/span/img').get_attribute("src")
-    #         title = self.driver.title
-    #         user_name = str(title)[:str(title).index("TikTok")]
-            
-    #         self.cursor.execute('INSERT OR IGNORE INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_tiktok, user_name.strip(), profile_picture, contributor))
-    #         self.connection_db.commit()
-    #         self.driver.quit()
-    #         return 1
-    #     except Exception as e:
-    #         return 0
+    def _get_info_tiktok(self, url_tiktok, contributor):
+        try:
+            self.driver.get(url_tiktok)
+            # profile_picture = self.driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[2]/div/div[1]/div[1]/div[1]/span/img').get_attribute("src")
+            profile_picture = self.driver.find_element(By.XPATH, '//*[@id="app"]/div[2]/div[2]/div/div[1]/div[1]/div[1]/span/img').get_attribute("src")
+            title = self.driver.title
+            user_name = str(title)[:str(title).index("TikTok")]
+            # print(url_tiktok, user_name, profile_picture)
+            self.cursor.execute('INSERT OR IGNORE INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_tiktok, user_name.strip(), profile_picture, contributor))
+            self.connection_db.commit()
+            # self.driver.quit()
+            return 1
+        except Exception as e:
+            return 0
 
     # Thêm mới dữ liệu
     def _add_info(self, message):
@@ -87,9 +91,12 @@ class Via_Telegram:
                             self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
                         elif result == 0:
                             self.bot.reply_to(message, "Sorry bạn, hình như profile đã được vị cao nhân nào đó đóng góp trước. Cảm ơn sự đóng góp của bạn!")
-                    # elif('tiktok' in str(url).lower()):
-                    #     self._get_info_tiktok(url, contributor)
-                    #     self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
+                    elif('tiktok' in str(url).lower()):
+                        result = self._get_info_tiktok(url, contributor)
+                        if result == 1:
+                            self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
+                        elif result == 0:
+                            self.bot.reply_to(message, "Sorry bạn, hình như profile đã được vị cao nhân nào đó đóng góp trước. Cảm ơn sự đóng góp của bạn!")
                     else:
                         self.bot.reply_to(message, '<i>Hiện tại hệ thống chưa hỗ trợ trang web này. Cảm ơn vì sự đóng góp của bạn!</i>')
             except Exception as e:
