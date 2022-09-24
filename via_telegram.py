@@ -125,9 +125,9 @@ class Via_Telegram:
                     self.connection_db.commit()
                     self.bot.reply_to(message, 'Xoá thành công!')
                 else:
-                    self.bot.reply_to(message, 'Vui lòng nhập ID cần xoá!\nXem ID tại: <pre>https://hoctap.giangpt.dev/</pre>')    
+                    self.bot.reply_to(message, 'Vui lòng nhập ID cần xoá!\nXem ID tại: https://hoctap.giangpt.dev/')    
             except Exception as e:
-                self.bot.reply_to(message, 'Vui lòng nhập ID cần xoá!\nXem ID tại: <pre>https://hoctap.giangpt.dev/</pre>')    
+                self.bot.reply_to(message, 'Vui lòng nhập ID cần xoá!\nXem ID tại: https://hoctap.giangpt.dev/')    
 
     # Xếp hạng đóng góp
     def _rank_user(self, message):
