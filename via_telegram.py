@@ -23,10 +23,18 @@ class Via_Telegram:
         @self.bot.message_handler(commands=["rank"])
         def rank(message):
             rank_users = self._rank_user(message)
-            content = '<b>DANH SÁCH ĐÓNG GÓP</b>\n'
+            content = '<b>🎖 DANH SÁCH ĐÓNG GÓP 🎖</b>\n'
+            ranks = ['🥇', '🥈', '🥉']
             i = 1
             for u in rank_users:
-                content += str(i) + '. ' + u['contributor'] + ' với ' + str(u['amount']) + ' đóng góp.\n'
+                if(i==1):
+                    content += str(ranks[0]) + '. ' + u['contributor'] + ' với ' + str(u['amount']) + ' đóng góp.\n'
+                elif(i==2):
+                    content += str(ranks[1]) + '. ' + u['contributor'] + ' với ' + str(u['amount']) + ' đóng góp.\n'
+                elif(i==3):
+                    content += str(ranks[2]) + '. ' + u['contributor'] + ' với ' + str(u['amount']) + ' đóng góp.\n'
+                else:
+                    content += str(i) + '. ' + u['contributor'] + ' với ' + str(u['amount']) + ' đóng góp.\n'
                 i+=1
             self.bot.reply_to(message, content)
 
@@ -39,7 +47,7 @@ class Via_Telegram:
         self.options.add_experimental_option('excludeSwitches', ['enable-logging'])
         self.options.add_argument("--headless")
         self.options.add_argument("--window-size=%s" % "1280,1024")
-        # self.driver = webdriver.Chrome(options=self.options)
+
 
     # Get dữ liệu từ Instagram
     def _get_info_instagram(self, url_instagram, contributor):
@@ -49,7 +57,6 @@ class Via_Telegram:
         payload = ""
         try:
             response = requests.request("GET", url_instagram, data=payload,  headers=headersList)
-            # print(response.text)
             data = BeautifulSoup(response.text, "html5lib")
             info = str(data.title).split('•')[0][7:]
 
