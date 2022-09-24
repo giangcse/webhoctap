@@ -84,10 +84,13 @@ class Via_Telegram:
             title = self.driver.title
             user_name = str(title)[:str(title).index("TikTok")]
 
-            self.cursor.execute('INSERT OR IGNORE INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_tiktok, user_name.strip(), profile_picture, contributor))
-            self.connection_db.commit()
-            # self.driver.quit()
-            return 1
+            result = self.cursor.execute('SELECT COUNT(URL) FROM main WHERE URL = ?', (str(url_tiktok),))
+            if (int(result.fetchone()[0]) == 0):
+                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_tiktok, title.strip(), profile_picture, contributor))
+                self.connection_db.commit()
+                return 1    
+            else:
+                return 0
         except Exception as e:
             return 0
 
