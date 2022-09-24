@@ -36,7 +36,9 @@ class Via_Telegram:
         # Chrome driver
         self.options = webdriver.ChromeOptions()
         self.options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        self.driver = webdriver.Chrome(options=self.options)
+        self.options.add_argument("--headless")
+        self.options.add_argument("--window-size=%s" % "1280,1024")
+        # self.driver = webdriver.Chrome(options=self.options)
 
     # Get dữ liệu từ Instagram
     def _get_info_instagram(self, url_instagram, contributor):
@@ -65,12 +67,12 @@ class Via_Telegram:
     # Get dữ liệu từ Tiktok
     def _get_info_tiktok(self, url_tiktok, contributor):
         try:
+            self.driver = webdriver.Chrome(executable_path = '/usr/lib/chromium-browser/chromedriver', chrome_options=self.options)
             self.driver.get(url_tiktok)
-            # profile_picture = self.driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[2]/div/div[1]/div[1]/div[1]/span/img').get_attribute("src")
             profile_picture = self.driver.find_element(By.XPATH, '//*[@id="app"]/div[2]/div[2]/div/div[1]/div[1]/div[1]/span/img').get_attribute("src")
             title = self.driver.title
             user_name = str(title)[:str(title).index("TikTok")]
-            # print(url_tiktok, user_name, profile_picture)
+
             self.cursor.execute('INSERT OR IGNORE INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_tiktok, user_name.strip(), profile_picture, contributor))
             self.connection_db.commit()
             # self.driver.quit()
