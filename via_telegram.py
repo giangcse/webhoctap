@@ -27,6 +27,7 @@ class Via_Telegram:
             i = 1
             for u in rank_users:
                 content += str(i) + '. ' + u['contributor'] + ' với ' + str(u['amount']) + ' đóng góp.\n'
+                i+=1
             self.bot.reply_to(message, content)
 
         # Khởi tạo thông tin kết nối đến Database
