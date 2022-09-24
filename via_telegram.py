@@ -151,7 +151,7 @@ class Via_Telegram:
     # Giới thiệu bot
     def _about(self, message):
         if('/start' in str(message.text)):
-            reply_to(message, "Xin chào <pre>" + str(message.from_user.first_name) + "</pre>,\n\nMình là bot hỗ trợ học tập. Bạn có thể xem tài liệu học tập tại địa chỉ https://hoctap.giangpt.dev/ hoặc có thể đóng góp thêm tài liệu từ instagram hoặc tiktok thông qua lệnh <pre>//add https://www.instagram.com/abc</pre>.")
+            self.bot.reply_to(message, "Xin chào <pre>" + str(message.from_user.first_name) + "</pre>,\n\nMình là bot hỗ trợ học tập. Bạn có thể xem tài liệu học tập tại địa chỉ https://hoctap.giangpt.dev/ hoặc có thể đóng góp thêm tài liệu từ instagram hoặc tiktok thông qua lệnh <pre>/add https://www.instagram.com/abc</pre>.")
 
 if __name__ == '__main__':
     via_tele = Via_Telegram()
