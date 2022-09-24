@@ -112,6 +112,20 @@ class Via_Telegram:
             except Exception as e:
                 self.bot.reply_to(message, 'Vui lòng điền URL hợp lệ!')
 
+    # Xoá dữ liệu
+    def _remove_info(self, message):
+        if("/remove" in str(message.text).lower()):
+            try:
+                if(str(message.text).split(" ")[1] != ''):
+                    ID = int(str(message.text).split(" ")[1])
+                    self.cursor.execute('DELETE FROM main WHERE ID = ?', (ID,))
+                    self.connection_db.commit()
+                    self.bot.reply_to(message, 'Xoá thành công!')
+                else:
+                    self.bot.reply_to(message, 'Vui lòng nhập ID cần xoá!')    
+            except Exception as e:
+                self.bot.reply_to(message, 'Vui lòng nhập ID cần xoá!')
+
     # Xếp hạng đóng góp
     def _rank_user(self, message):
         if('/rank' in str(message.text).lower()):

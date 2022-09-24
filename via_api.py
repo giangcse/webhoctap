@@ -150,7 +150,7 @@ class Via_api:
                                     }else if(link.includes("tiktok")){
                                         icon = tiktok;
                                     }
-                                    str += '<div class="col-sm-2"><div class="card mb-2"><a href="'+element.url+'" class="card-title" style="color: #ffffff;" target="_blank"><img src="'+element.url_pic+'" class="card-img-top"><div class="card-img-overlay">'+icon+' '+element.user_name+'</div></a></div></div>';
+                                    str += '<div class="col-sm-2"><div class="card mb-2"><a href="'+element.url+'" class="card-title" style="color: #ffffff;" target="_blank"><img src="'+element.url_pic+'" class="card-img-top"><div class="card-img-overlay">'+icon+' '+element.user_name+'<br>ID: '+element.id+'</div></a></div></div>';
                                 });
                                 document.getElementById("main").innerHTML = str;
                                 document.getElementById("soLuong").innerText = 'Hiện tại đã có ' + data.length + ' đóng góp từ các vị anh hùng';
