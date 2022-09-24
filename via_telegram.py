@@ -41,6 +41,10 @@ class Via_Telegram:
         @self.bot.message_handler(commands=["remove"])
         def remove_info(message):
             self._remove_info(message)
+        # Handle message /start
+        @self.bot.message_handler(commands=["start"])
+        def about(message):
+            self._about(message)
         # Khởi tạo thông tin kết nối đến Database
         self.database = 'data.db'
         self.connection_db = sqlite3.connect(self.database, check_same_thread=False)
@@ -143,6 +147,11 @@ class Via_Telegram:
                 return sorted(rank_users, key=lambda d: d['amount'], reverse=True) 
             except Exception as e:
                 return e
+
+    # Giới thiệu bot
+    def _about(self, message):
+        if('/start' in str(message.text)):
+            reply_to(message, "Xin chào <pre>" + str(message.from_user.first_name) + "</pre>,\n\nMình là bot hỗ trợ học tập. Bạn có thể xem tài liệu học tập tại địa chỉ https://hoctap.giangpt.dev/ hoặc có thể đóng góp thêm tài liệu từ instagram hoặc tiktok thông qua lệnh <pre>//add https://www.instagram.com/abc</pre>.")
 
 if __name__ == '__main__':
     via_tele = Via_Telegram()
