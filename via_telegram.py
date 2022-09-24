@@ -37,7 +37,10 @@ class Via_Telegram:
                     content += str(i) + '  @' + u['contributor'] + ' với ' + str(u['amount']) + ' đóng góp.\n'
                 i+=1
             self.bot.reply_to(message, content)
-
+        #Handle message /remove
+        @self.bot.message_handler(commands=["remove"])
+        def remove_info(message):
+            self._remove_info(message)
         # Khởi tạo thông tin kết nối đến Database
         self.database = 'data.db'
         self.connection_db = sqlite3.connect(self.database, check_same_thread=False)
