@@ -108,7 +108,7 @@ class Via_Telegram:
                 contributor = str(message.from_user.username)
                 if(validators.url(url)):
                     if('instagram' in str(url).lower()):
-                        result = self._load_cookie(url, contributor)
+                        result = self._get_info_instagram(url, contributor)
                         if result == 1:
                             self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
                         elif result == 0:
