@@ -1,4 +1,4 @@
-import profile
+import pickle
 import telebot
 import random
 import json
@@ -7,7 +7,9 @@ import validators
 import requests
 
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
+from time import sleep
 from bs4 import BeautifulSoup
 
 class Via_Telegram:
@@ -152,6 +154,46 @@ class Via_Telegram:
     def _about(self, message):
         if('/start' in str(message.text)):
             self.bot.reply_to(message, "Xin chào <b>" + str(message.from_user.first_name) + "</b>,\n\nMình là bot hỗ trợ học tập. Bạn có thể xem tài liệu học tập tại địa chỉ https://hoctap.giangpt.dev/ hoặc có thể đóng góp thêm tài liệu từ instagram hoặc tiktok thông qua lệnh <pre>/add https://www.instagram.com/abc</pre>")
+
+    # Lưu cookie instagram
+    def _save_cookie(self, username, password):
+        self.driver.get('https://www.instagram.com/')
+        sleep(10)
+        # Dien username
+        uname = self.driver.find_element(By.XPATH, '//*[@id="loginForm"]/div/div[1]/div/label/input')
+        uname.send_keys(username)
+        # Dien password
+        upass = self.driver.find_element(By.XPATH, '//*[@id="loginForm"]/div/div[2]/div/label/input')
+        upass.send_keys(password)
+        # Nhan phim ENTER de dang nhap
+        upass.send_keys(Keys.ENTER)
+        # Doi load xong
+        sleep(10)
+        # Luu cookie
+        pickle.dump(self.driver.get_cookies(), open("insta.pkl","wb"))
+
+    # Load cookie instagram
+    def _load_cookie(self, url_instagram, contributor):
+        self.driver.get("https://www.instagram.com")
+        # 2.Load cookie from file
+        cookies = pickle.load(open("my_cookie.pkl","rb"))
+        for cookie in cookies:
+            self.driver.add_cookie(cookie)
+        # 3. Refresh the self.driver
+        self.driver.get(url_instagram)
+        try: 
+            profile_pic = self.driver.find_element(By.XPATH, '//*[@id="mount_0_0_V2"]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/div/div/span/img').get_attribute('src')
+            profile_name = str(self.driver.title).split('•')[0][7:].strip()
+            result = self.cursor.execute('SELECT COUNT(URL) FROM main WHERE URL = ?', (str(url_instagram),))
+            if (int(result.fetchone()[0]) == 0):
+                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_instagram, profile_name, profile_pic, contributor))
+                self.connection_db.commit()
+                return 1    
+            else:
+                return 0
+        except Exception as e:
+            return 2
+
 
 if __name__ == '__main__':
     via_tele = Via_Telegram()
