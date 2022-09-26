@@ -130,7 +130,7 @@ class Via_Telegram:
     # Get dữ liệu video tiktok
     def _get_video_tiktok(self, url_tiktok, contributor):
         try:
-            self.driver = webdriver.Chrome(executable_path = '/usr/lib/chromium-browser/chromedriver')
+            self.driver = webdriver.Chrome(executable_path = '/usr/lib/chromium-browser/chromedriver', chrome_options=self.options)
             self.driver.get(url_tiktok)
 
             title = self.driver.find_element(By.XPATH, '//*[@id="app"]/div[2]/div[2]/div[1]/div[3]/div[1]/div[1]/div[2]/div').text
