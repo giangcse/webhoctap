@@ -136,6 +136,8 @@ class Via_Telegram:
                             self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
                         elif result == 0:
                             self.bot.reply_to(message, "Sorry bạn, hình như profile đã được vị cao nhân nào đó đóng góp trước. Cảm ơn sự đóng góp của bạn!")
+                        else:
+                            self.bot.reply_to(message, "Ops! Server đã bị Instagram block IP do có quá nhiều request trong khoản thời gian ngắn. Bạn vui lòng thêm lại sau vài giờ nhé!")
                     elif('tiktok' in str(url).lower()):
                         result = self._get_info_tiktok(url, contributor)
                         if result == 1:
