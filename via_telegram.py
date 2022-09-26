@@ -1,4 +1,5 @@
 import pickle
+from unittest import result
 import telebot
 import random
 import json
@@ -60,21 +61,42 @@ class Via_Telegram:
 
 
     # Get dữ liệu từ Instagram
-    def _get_info_instagram(self, url_instagram, contributor):
-        headersList = {
-            "Accept": "*/*",
-        }
-        payload = ""
-        try:
-            response = requests.request("GET", url_instagram, data=payload,  headers=headersList)
-            data = BeautifulSoup(response.text, "html5lib")
-            info = str(data.title).split('•')[0][7:]
+    # def _get_info_instagram(self, url_instagram, contributor):
+    #     headersList = {
+    #         "Accept": "*/*",
+    #     }
+    #     payload = ""
+    #     try:
+    #         response = requests.request("GET", url_instagram, data=payload,  headers=headersList)
+    #         data = BeautifulSoup(response.text, "html5lib")
+    #         info = str(data.title).split('•')[0][7:]
 
-            idx = (str(data).index('"profile_pic_url":'))
-            url_pic = (str(data)[idx+19:idx+500].split('"')[0].replace('\\', ''))
+    #         idx = (str(data).index('"profile_pic_url":'))
+    #         url_pic = (str(data)[idx+19:idx+500].split('"')[0].replace('\\', ''))
+    #         result = self.cursor.execute('SELECT COUNT(URL) FROM main WHERE URL = ?', (str(url_instagram),))
+    #         if (int(result.fetchone()[0]) == 0):
+    #             self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_instagram, info.strip(), url_pic, contributor))
+    #             self.connection_db.commit()
+    #             return 1    
+    #         else:
+    #             return 0
+    #     except Exception as e:
+    #         return 2
+
+    # Get dữ liệu từ Instagram
+    def _get_info_instagram(self, url_instagram, contributor):
+        try:
+            self.driver = webdriver.Chrome(executable_path = '/usr/lib/chromium-browser/chromedriver', chrome_options=self.options)
+            self.driver.get(url_instagram)
+            # Đợi load xong
+            sleep(10)
+            uname = str(self.driver.title).split('@')[1]
+            uname = uname.split(')')[0]
+            url_pic = self.driver.find_element(By.CSS_SELECTOR, '[alt="'+str(uname)+'\'s profile picture"]').get_attribute('src')
+
             result = self.cursor.execute('SELECT COUNT(URL) FROM main WHERE URL = ?', (str(url_instagram),))
             if (int(result.fetchone()[0]) == 0):
-                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_instagram, info.strip(), url_pic, contributor))
+                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_instagram, uname.strip(), url_pic, contributor))
                 self.connection_db.commit()
                 return 1    
             else:
