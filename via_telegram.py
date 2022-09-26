@@ -115,7 +115,7 @@ class Via_Telegram:
 
             result = self.cursor.execute('SELECT COUNT(URL) FROM main WHERE URL = ?', (str(url_tiktok),))
             if (int(result.fetchone()[0]) == 0):
-                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_tiktok, title.strip(), profile_picture, contributor))
+                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_tiktok, user_name.strip(), profile_picture, contributor))
                 self.connection_db.commit()
                 return 1    
             else:
