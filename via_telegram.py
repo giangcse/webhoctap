@@ -1,5 +1,4 @@
 import pickle
-from turtle import title
 import telebot
 import random
 import json
@@ -208,8 +207,12 @@ class Via_Telegram:
         if('/rank' in str(message.text).lower()):
             try:
                 rank_users = []
-                result = self.cursor.execute('SELECT COUNT(CONTRIBUTORS), CONTRIBUTORS FROM main GROUP BY CONTRIBUTORS')
-                for u in result.fetchall():
+                result_profiles = self.cursor.execute('SELECT COUNT(CONTRIBUTORS), CONTRIBUTORS FROM main GROUP BY CONTRIBUTORS')
+                for u in result_profiles.fetchall():
+                    rank_users.append({"contributor": u[1], "amount": u[0]})
+                
+                result_videos = self.cursor.execute('SELECT COUNT(CONTRIBUTORS), CONTRIBUTORS FROM video GROUP BY CONTRIBUTORS')
+                for u in result_videos.fetchall():
                     rank_users.append({"contributor": u[1], "amount": u[0]})
                 return sorted(rank_users, key=lambda d: d['amount'], reverse=True) 
             except Exception as e:
@@ -219,38 +222,6 @@ class Via_Telegram:
     def _about(self, message):
         if('/start' in str(message.text)):
             self.bot.reply_to(message, "Xin chào <b>" + str(message.from_user.first_name) + "</b>,\n\nMình là bot hỗ trợ học tập. Bạn có thể xem tài liệu học tập tại địa chỉ https://hoctap.giangpt.dev/ hoặc có thể đóng góp thêm tài liệu từ instagram hoặc tiktok thông qua lệnh <pre>/add https://www.instagram.com/abc</pre>")
-
-    # Lưu cookie instagram
-    def _save_cookie(self, username, password):
-        self.driver.get('https://www.instagram.com/')
-        sleep(10)
-        # Dien username
-        uname = self.driver.find_element(By.XPATH, '//*[@id="loginForm"]/div/div[1]/div/label/input')
-        uname.send_keys(username)
-        # Dien password
-        upass = self.driver.find_element(By.XPATH, '//*[@id="loginForm"]/div/div[2]/div/label/input')
-        upass.send_keys(password)
-        # Nhan phim ENTER de dang nhap
-        upass.send_keys(Keys.ENTER)
-        # Doi load xong
-        sleep(10)
-        # Luu cookie
-        pickle.dump(self.driver.get_cookies(), open("insta.pkl","wb"))
-
-    # Load cookie instagram
-    def _load_cookie(self, url_instagram, contributor):
-        try:
-            res = load_cookie._get_info_instagram(url_instagram)
-            result = self.cursor.execute('SELECT COUNT(URL) FROM main WHERE URL = ?', (str(url_instagram),))
-            if (int(result.fetchone()[0]) == 0):
-                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_instagram, res['uname'], res['url_pic'], contributor))
-                self.connection_db.commit()
-                return 1    
-            else:
-                return 0
-        except Exception as e:
-            return 2
-
 
 if __name__ == '__main__':
     via_tele = Via_Telegram()
