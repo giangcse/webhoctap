@@ -99,12 +99,13 @@ class Via_api:
                         opacity: 80%;
                     }
                 </style>
-                <title>Tài liệu học tập</title>
+                <title>Profiles | Tài liệu học tập</title>
             </head>
             <body>
                 <header class="site-header sticky-top py-1 navbar-custom">
                     <nav class="container d-flex flex-column flex-md-row justify-content-between">
-                    <b class="py-2" style="color: #ffffff;">TÀI LIỆU HỌC TẬP</b>
+                    <b class="py-2" style="color: #ffffff;"><i class="bi bi-journal-bookmark-fill"></i> TÀI LIỆU HỌC TẬP</b>
+                    <a href="/videos" class="py-2 d-none d-md-inline-block" style="color: #ffffff;">Videos</a>
                     </nav>
                 </header>
                 <main>
@@ -197,7 +198,8 @@ class Via_api:
             <body>
                 <header class="site-header sticky-top py-1 navbar-custom">
                     <nav class="container d-flex flex-column flex-md-row justify-content-between">
-                    <b class="py-2" style="color: #ffffff;">TÀI LIỆU HỌC TẬP</b>
+                    <b class="py-2" style="color: #ffffff;"><i class="bi bi-journal-bookmark-fill"></i> TÀI LIỆU HỌC TẬP</b>
+                    <a href="/" class="py-2 d-none d-md-inline-block" style="color: #ffffff;">Profiles</a>
                     </nav>
                 </header>
                 <main>
