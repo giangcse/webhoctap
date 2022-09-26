@@ -5,12 +5,13 @@ import json
 import sqlite3
 import validators
 import requests
-
+import load_cookie
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from time import sleep
 from bs4 import BeautifulSoup
+
 
 class Via_Telegram:
     def __init__(self) -> None:
@@ -108,7 +109,7 @@ class Via_Telegram:
                 contributor = str(message.from_user.username)
                 if(validators.url(url)):
                     if('instagram' in str(url).lower()):
-                        result = self._get_info_instagram(url, contributor)
+                        result = self._load_cookie(url, contributor)
                         if result == 1:
                             self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
                         elif result == 0:
@@ -174,19 +175,11 @@ class Via_Telegram:
 
     # Load cookie instagram
     def _load_cookie(self, url_instagram, contributor):
-        self.driver.get("https://www.instagram.com")
-        # 2.Load cookie from file
-        cookies = pickle.load(open("my_cookie.pkl","rb"))
-        for cookie in cookies:
-            self.driver.add_cookie(cookie)
-        # 3. Refresh the self.driver
-        self.driver.get(url_instagram)
-        try: 
-            profile_pic = self.driver.find_element(By.XPATH, '//*[@id="mount_0_0_V2"]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/div/div/span/img').get_attribute('src')
-            profile_name = str(self.driver.title).split('•')[0][7:].strip()
+        try:
+            res = load_cookie._get_info_instagram(url_instagram)
             result = self.cursor.execute('SELECT COUNT(URL) FROM main WHERE URL = ?', (str(url_instagram),))
             if (int(result.fetchone()[0]) == 0):
-                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_instagram, profile_name, profile_pic, contributor))
+                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_instagram, res['uname'], res['url_pic'], contributor))
                 self.connection_db.commit()
                 return 1    
             else:

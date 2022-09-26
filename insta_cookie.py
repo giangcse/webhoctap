@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 from time import sleep
 
 # 0. Declare the browser
-browser = webdriver.Chrome(executable_path="./chromedriver")
+browser = webdriver.Chrome('/usr/lib/chromium-browser/chromedriver')
 
 # 1. Open faceboook
 browser.get("https://www.instagram.com")
@@ -14,6 +14,6 @@ browser.get("https://www.instagram.com")
 
 sleep(20)
 
-pickle.dump(browser.get_cookies(), open("my_cookie.pkl","wb"))
+pickle.dump(browser.get_cookies(), open("insta.pkl","wb"))
 
 browser.close()
