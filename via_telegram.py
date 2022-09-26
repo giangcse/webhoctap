@@ -22,6 +22,10 @@ class Via_Telegram:
         @self.bot.message_handler(commands=["add"])
         def add_info(message):
             self._add_info(message)
+        # Handle message /clip
+        @self.bot.message_handler(commands=['clip'])
+        def add_clip(message):
+            self._add_video(message)
         # Handle message /rank
         @self.bot.message_handler(commands=["rank"])
         def rank(message):
@@ -166,14 +170,23 @@ class Via_Telegram:
                             self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
                         elif result == 0:
                             self.bot.reply_to(message, "Sorry bạn, hình như profile đã được vị cao nhân nào đó đóng góp trước. Cảm ơn sự đóng góp của bạn!")
-                        else:
-                            res = self._get_video_tiktok(url, contributor)
-                            if(res == 1):
-                                self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
-                            elif(res == 0):
-                                self.bot.reply_to(message, "Sorry bạn, hình như profile đã được vị cao nhân nào đó đóng góp trước. Cảm ơn sự đóng góp của bạn!")
                     else:
                         self.bot.reply_to(message, '<i>Hiện tại hệ thống chưa hỗ trợ trang web này. Cảm ơn vì sự đóng góp của bạn!</i>')
+            except Exception as e:
+                self.bot.reply_to(message, 'Vui lòng điền URL hợp lệ!')
+
+    # Thêm dữ liệu video tiktok
+    def _add_video(self, message):
+        if('/clip' in str(message.text).lower()):
+            try:
+                url = str(message.text).split(' ')[1]
+                contributor = str(message.from_user.username)
+                if(validators.url(url)):
+                    result = self._get_video_tiktok(url, contributor)
+                    if(result == 1):
+                        self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
+                    elif result == 0:
+                        self.bot.reply_to(message, "Sorry bạn, hình như profile đã được vị cao nhân nào đó đóng góp trước. Cảm ơn sự đóng góp của bạn!")
             except Exception as e:
                 self.bot.reply_to(message, 'Vui lòng điền URL hợp lệ!')
 
