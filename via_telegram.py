@@ -128,9 +128,13 @@ class Via_Telegram:
 
     # Get dữ liệu video tiktok
     def _get_video_tiktok(self, url_tiktok, contributor):
+        headersList = {
+            "Accept": "*/*",
+        }
+        payload = ""
         try:
             if('/video/' in url_tiktok):
-                response = requests.get(url_tiktok)
+                response = requests.request("GET", url_tiktok, data=payload,  headers=headersList)
                 data = BeautifulSoup(response.text, "html5lib")
                 title = str(data.title)
                 thumbnails = data.find("meta", attrs={'property': 'og:image'}).attrs['content']
@@ -140,7 +144,7 @@ class Via_Telegram:
                     self.cursor.execute('INSERT INTO videos(URL, TITLE, THUMBNAIL, CONTRIBUTORS) VALUE(?, ?, ?, ?)', (url_tiktok, title, thumbnails, contributor))
                     self.connection_db.commit()
             elif('vt.tiktok' in url_tiktok):
-                response = requests.get(url_tiktok)
+                response = requests.request("GET", url_tiktok, data=payload,  headers=headersList)
                 data = BeautifulSoup(response.text, "html5lib")
                 url = data.find(href=True)['href']
                 self._get_video_tiktok(url, contributor)
