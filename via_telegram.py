@@ -1,5 +1,4 @@
 import pickle
-from unittest import result
 import telebot
 import random
 import json
@@ -123,6 +122,29 @@ class Via_Telegram:
         except Exception as e:
             return 0
 
+    # Get dữ liệu video tiktok
+    def _get_video_tiktok(self, url_tiktok, contributor):
+        try:
+            if('/video/' in url_tiktok):
+                response = requests.get(url_tiktok)
+                data = BeautifulSoup(response.text, "html5lib")
+                title = str(data.title)
+                thumbnails = data.find("meta", attrs={'property': 'og:image'}).attrs['content']
+                result = self.cursor.execute('SELECT COUNT(URL) FROM videos WHERE URL = ?', (str(url_tiktok),))
+
+                if(int(result.fetchone()[0]) == 0):
+                    self.cursor.execute('INSERT INTO videos(URL, TITLE, THUMBNAIL, CONTRIBUTORS) VALUE(?, ?, ?, ?)', (url_tiktok, title, thumbnails, contributor))
+                    self.connection_db.commit()
+            elif('vt.tiktok' in url_tiktok):
+                response = requests.get(url_tiktok)
+                data = BeautifulSoup(response.text, "html5lib")
+                url = data.find(href=True)['href']
+                self._get_video_tiktok(url, contributor)
+            return 1
+        except Exception as e:
+            return 2
+
+
     # Thêm mới dữ liệu
     def _add_info(self, message):
         if('/add' in str(message.text).lower()):
@@ -144,6 +166,12 @@ class Via_Telegram:
                             self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
                         elif result == 0:
                             self.bot.reply_to(message, "Sorry bạn, hình như profile đã được vị cao nhân nào đó đóng góp trước. Cảm ơn sự đóng góp của bạn!")
+                        else:
+                            res = self._get_video_tiktok(url, contributor)
+                            if(res == 1):
+                                self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
+                            elif(res == 0):
+                                self.bot.reply_to(message, "Sorry bạn, hình như profile đã được vị cao nhân nào đó đóng góp trước. Cảm ơn sự đóng góp của bạn!")
                     else:
                         self.bot.reply_to(message, '<i>Hiện tại hệ thống chưa hỗ trợ trang web này. Cảm ơn vì sự đóng góp của bạn!</i>')
             except Exception as e:
