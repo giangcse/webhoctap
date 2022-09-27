@@ -52,6 +52,10 @@ class Via_Telegram:
         @self.bot.message_handler(commands=["start"])
         def about(message):
             self._about(message)
+        # Handle message /update
+        @self.bot.message_handler(commands=['update'])
+        def update(message):
+            self._update(message)
         # Khởi tạo thông tin kết nối đến Database
         self.database = 'data.db'
         self.connection_db = sqlite3.connect(self.database, check_same_thread=False)
@@ -217,6 +221,28 @@ class Via_Telegram:
     def _about(self, message):
         if('/start' in str(message.text)):
             self.bot.reply_to(message, "Xin chào <b>" + str(message.from_user.first_name) + "</b>,\n\nMình là bot hỗ trợ học tập. Bạn có thể xem tài liệu học tập tại địa chỉ https://hoctap.giangpt.dev/ hoặc có thể đóng góp thêm tài liệu từ instagram hoặc tiktok thông qua lệnh <pre>/add https://www.instagram.com/abc</pre>")
+
+    # Cập nhật DB khi avatar lỗi
+    def _update(self, message):
+        if('/update' in str(message.text)):
+            headersList = {
+                "Accept": "*/*",
+            }
+            payload = ""
+            self.bot.reply_to(message, 'Đang thực hiện update. Vui lòng đợi trong giây lát!')
+            try:
+                data = self.cursor.execute('SELECT * FROM main')
+                for i in data.fetchall():
+                    response = requests.request("GET", i[3], data=payload,  headers=headersList)
+                    if(response.text == 'URL signature expired'):
+                        self._get_info_instagram_bs4(str(i[1]), str(i[4]))
+                        self.cursor.execute('DELETE FROM main WHERE ID = ?', (int(i[0]),))
+                        self.connection_db.commit()
+                    sleep(15)
+                self.bot.reply_to(message, 'Đã update thành công!')
+            except Exception as e:
+                print(e)
+
 
 if __name__ == '__main__':
     via_tele = Via_Telegram()
