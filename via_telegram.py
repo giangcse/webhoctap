@@ -84,11 +84,9 @@ class Via_Telegram:
             if (int(result.fetchone()[0]) == 0):
                 self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_instagram, info.strip(), url_pic, contributor))
                 self.connection_db.commit()
-                return 1 
+                return 1
             else:
-                self.cursor.execute('UPDATE main SET URL_PIC = ? WHERE URL = ?', (url_pic, url_instagram))
-                self.connection_db.commit()
-                return 1   
+                return 0  
         except Exception as e:
             return 2
 
@@ -236,10 +234,13 @@ class Via_Telegram:
                 data = self.cursor.execute('SELECT * FROM main')
                 for i in data.fetchall():
                     response = requests.request("GET", i[3], data=payload,  headers=headersList)
+                    id = int(i[0])
+                    url = str(i[1])
+                    contributor = str(i[4])
                     if(response.text == 'URL signature expired'):
-                        self._get_info_instagram_bs4(str(i[1]), str(i[4]))
-                        # self.cursor.execute('DELETE FROM main WHERE ID = ?', (int(i[0]),))
-                        # self.connection_db.commit()
+                        self.cursor.execute('DELETE FROM main WHERE ID = ?', (id,))
+                        self.connection_db.commit()
+                        self._get_info_instagram_bs4(url, contributor)
                     sleep(15)
                 self.bot.reply_to(message, 'Đã update thành công!')
             except Exception as e:
