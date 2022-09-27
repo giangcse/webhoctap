@@ -84,7 +84,11 @@ class Via_Telegram:
             if (int(result.fetchone()[0]) == 0):
                 self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_instagram, info.strip(), url_pic, contributor))
                 self.connection_db.commit()
-                return 1    
+                return 1 
+            elif (int(result.fetchone()[0]) == 1):
+                self.cursor.execute('UPDATE main SET URL_PIC = ? WHERE URL = ?', (url_pic, url_instagram))
+                self.connection_db.commit()
+                return 1   
             else:
                 return 0
         except Exception as e:
@@ -106,10 +110,6 @@ class Via_Telegram:
                 self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_instagram, uname.strip(), url_pic, contributor))
                 self.connection_db.commit()
                 return 1    
-            elif (int(result.fetchone()[0]) == 1):
-                self.cursor.execute('UPDATE main SET URL_PIC = ? WHERE URL = ?', (url_pic, url_instagram))
-                self.connection_db.commit()
-                return 1
             else:
                 return 0
         except Exception as e:
