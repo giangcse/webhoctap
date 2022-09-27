@@ -107,7 +107,7 @@ class Via_Telegram:
                 self.connection_db.commit()
                 return 1    
             elif (int(result.fetchone()[0]) == 1):
-                self.cursor.execute('UPDATE main SET URL_PIC = ?', (url_pic,))
+                self.cursor.execute('UPDATE main SET URL_PIC = ? WHERE URL = ?', (url_pic, url_instagram))
                 self.connection_db.commit()
                 return 1
             else:
