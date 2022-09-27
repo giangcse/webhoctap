@@ -240,8 +240,8 @@ class Via_Telegram:
                     response = requests.request("GET", i[3], data=payload,  headers=headersList)
                     if(response.text == 'URL signature expired'):
                         self._get_info_instagram_bs4(str(i[1]), str(i[4]))
-                        self.cursor.execute('DELETE FROM main WHERE ID = ?', (int(i[0]),))
-                        self.connection_db.commit()
+                        # self.cursor.execute('DELETE FROM main WHERE ID = ?', (int(i[0]),))
+                        # self.connection_db.commit()
                     sleep(15)
                 self.bot.reply_to(message, 'Đã update thành công!')
             except Exception as e:
