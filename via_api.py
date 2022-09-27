@@ -77,17 +77,6 @@ class Via_api:
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.js" integrity="sha512-CX7sDOp7UTAq+i1FYIlf9Uo27x4os+kGeoT7rgwvY+4dmjqV0IuE/Bl5hVsjnQPQiTOhAX1O2r2j5bjsFBvv/A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
                 <style>
-                    /* Modify the background color */
-                    
-                    .navbar-custom {
-                        background-color: #758283;
-                    }
-                    /* Modify brand and text color */
-                    
-                    .navbar-custom .navbar-brand,
-                    .navbar-custom .navbar-text {
-                        color: white;
-                    }
                     a:link {
                         text-decoration: none;
                     }
@@ -102,17 +91,38 @@ class Via_api:
                 <title>Profiles | Tài liệu học tập</title>
             </head>
             <body>
-                <header class="site-header sticky-top py-1 navbar-custom">
-                    <nav class="container d-flex flex-column flex-md-row justify-content-between">
-                    <b class="py-2" style="color: #ffffff;"><i class="bi bi-journal-bookmark-fill"></i> TÀI LIỆU HỌC TẬP</b>
-                    <a href="/videos" class="py-2 d-none d-md-inline-block" style="color: #ffffff;">Videos</a>
-                    </nav>
-                </header>
+                <nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
+                    <div class="container">
+                        <a class="navbar-brand" href="#">TÀI LIỆU HỌC TẬP <i class="bi bi-badge-4k-fill"></i></a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarText">
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="#">Profiles</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" href="/videos">Videos</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" href="https://t.me/giangvirtualassistantbot">Đóng góp</a>
+                                </li>
+                            </ul>
+                            <span class="navbar-text">
+                            <select class="form-select form-select-sm" aria-label=".form-select-sm example" id="filter" onchange="loadData()">
+                                <option value="instagram" selected>Instagram</option>
+                                <option value="tiktok">TikTok</option>
+                            </select>
+                            </span>
+                        </div>
+                    </div>
+                </nav>
                 <main>
                     <div class="container position-relative overflow-hidden p-3">
                         <figure class="text-end">
                             <blockquote class="blockquote">
-                                <p>Các vị anh hùng hãy cẩn trọng. Những trang sử này dễ gây mất hạnh phúc gia đình.</p>
+                                <p>Gõ /update trên <a href="https://t.me/giangvirtualassistantbot">Telegram</a> nếu mất một số ảnh.</p>
                             </blockquote>
                             <figcaption class="blockquote-footer" id="soLuong">
                             </figcaption>
@@ -127,9 +137,13 @@ class Via_api:
                 <script>
                     loadData();
                     function loadData(){
-                        let str = '';
+                        //let str = '';
+                        let str_in = '';
+                        let str_ti = '';
                         let insta = '<i class="bi bi-instagram"></i> ';
                         let tiktok = '<i class="bi bi-tiktok"></i>';
+                        let filter = document.getElementById("filter").value;
+                        console.log(filter)
                         $.ajax({
                             url: '/get_data',
                             data: '',
@@ -142,12 +156,16 @@ class Via_api:
                                     let icon = '';
                                     if(link.includes("instagram")){
                                         icon = insta;
+                                        str_in += '<a class="col-sm-2" href="'+element.url+'" style="color: #ffffff;" target="_blank"><div class="card mb-2"><img src="'+element.url_pic+'" class="card-img-top"><div class="card-img-overlay">'+icon+' '+element.user_name+'<br>ID: '+element.id+'</div></div></a>';
                                     }else if(link.includes("tiktok")){
-                                        icon = tiktok;
+                                        str_ti += '<a class="col-sm-2" href="'+element.url+'" style="color: #ffffff;" target="_blank"><div class="card mb-2"><img src="'+element.url_pic+'" class="card-img-top"><div class="card-img-overlay">'+icon+' '+element.user_name+'<br>ID: '+element.id+'</div></div></a>';
                                     }
-                                    str += '<a class="col-sm-2" href="'+element.url+'" style="color: #ffffff;" target="_blank"><div class="card mb-2"><img src="'+element.url_pic+'" class="card-img-top"><div class="card-img-overlay">'+icon+' '+element.user_name+'<br>ID: '+element.id+'</div></div></a>';
+                                    //str += '<a class="col-sm-2" href="'+element.url+'" style="color: #ffffff;" target="_blank"><div class="card mb-2"><img src="'+element.url_pic+'" class="card-img-top"><div class="card-img-overlay">'+icon+' '+element.user_name+'<br>ID: '+element.id+'</div></div></a>';
                                 });
-                                document.getElementById("main").innerHTML = str;
+                                if(filter == 'instagram')
+                                    document.getElementById("main").innerHTML = str_in;
+                                else
+                                    document.getElementById("main").innerHTML = str_ti;
                                 document.getElementById("soLuong").innerText = 'Hiện tại đã có ' + data.length + ' đóng góp từ các vị anh hùng';
                             }
                         });
@@ -171,17 +189,6 @@ class Via_api:
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.js" integrity="sha512-CX7sDOp7UTAq+i1FYIlf9Uo27x4os+kGeoT7rgwvY+4dmjqV0IuE/Bl5hVsjnQPQiTOhAX1O2r2j5bjsFBvv/A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
                 <style>
-                    /* Modify the background color */
-                    
-                    .navbar-custom {
-                        background-color: #758283;
-                    }
-                    /* Modify brand and text color */
-                    
-                    .navbar-custom .navbar-brand,
-                    .navbar-custom .navbar-text {
-                        color: white;
-                    }
                     a:link {
                         text-decoration: none;
                     }
@@ -196,17 +203,32 @@ class Via_api:
                 <title>Videos TikTok | Tài liệu học tập</title>
             </head>
             <body>
-                <header class="site-header sticky-top py-1 navbar-custom">
-                    <nav class="container d-flex flex-column flex-md-row justify-content-between">
-                    <b class="py-2" style="color: #ffffff;"><i class="bi bi-journal-bookmark-fill"></i> TÀI LIỆU HỌC TẬP</b>
-                    <a href="/" class="py-2 d-none d-md-inline-block" style="color: #ffffff;">Profiles</a>
-                    </nav>
-                </header>
+                <nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
+                    <div class="container">
+                        <a class="navbar-brand" href="#">TÀI LIỆU HỌC TẬP <i class="bi bi-badge-4k-fill"></i></a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarText">
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" href="/">Profiles</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="#">Videos</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" href="https://t.me/giangvirtualassistantbot">Đóng góp</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
                 <main>
                     <div class="container position-relative overflow-hidden p-3">
                         <figure class="text-end">
                             <blockquote class="blockquote">
-                                <p>Các vị anh hùng hãy cẩn trọng. Những trang sử này dễ gây mất hạnh phúc gia đình.</p>
+                                <p>Gõ /update trên <a href="https://t.me/giangvirtualassistantbot">Telegram</a> nếu mất một số ảnh.</p>
                             </blockquote>
                             <figcaption class="blockquote-footer" id="soLuong">
                             </figcaption>

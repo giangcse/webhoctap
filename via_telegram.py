@@ -241,6 +241,10 @@ class Via_Telegram:
                         self.cursor.execute('DELETE FROM main WHERE ID = ?', (id,))
                         self.connection_db.commit()
                         self._get_info_instagram_bs4(url, contributor)
+                    elif(BeautifulSoup(response.text, 'html5lib').title == 'Access Denied'):
+                        self.cursor.execute('DELETE FROM main WHERE ID = ?', (id,))
+                        self.connection_db.commit()
+                        self._get_info_tiktok(url, contributor)
                     sleep(15)
                 self.bot.reply_to(message, 'Đã update thành công!')
             except Exception as e:
