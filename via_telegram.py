@@ -146,18 +146,6 @@ class Via_Telegram:
         except Exception as e:
             return 2
 
-    # Get dữ liệu từ twitter
-    def _get_info_twitter(self, url_twitter, contributor):
-        try:
-            self.driver = webdriver.Chrome(executable_path = '/usr/lib/chromium-browser/chromedriver', chrome_options=self.options)
-            self.driver.get(url_twitter)
-
-            title = self.driver.title
-            url_pic = self.driver.find_element(By.XPATH, '//*[@id="layers"]/div[2]/div/div/div/div/div/div[2]/div[2]/div[1]/div/div/div/div/div/img').get_attribute('src')
-            return (title, url_pic)
-        except Exception as e:
-            return 2
-
     # Thêm mới dữ liệu
     def _add_info(self, message):
         if('/add' in str(message.text).lower()):
@@ -179,9 +167,6 @@ class Via_Telegram:
                             self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
                         elif result == 0:
                             self.bot.reply_to(message, "Sorry bạn, hình như profile đã được vị cao nhân nào đó đóng góp trước. Cảm ơn sự đóng góp của bạn!")
-                    elif('twitter' in str(url).lower()):
-                        result = self._get_info_twitter(url, contributor)
-                        self.bot.reply_to(message, result)
                     else:
                         self.bot.reply_to(message, '<i>Hiện tại hệ thống chưa hỗ trợ trang web này. Cảm ơn vì sự đóng góp của bạn!</i>')
             except Exception as e:
