@@ -284,7 +284,7 @@ class Via_api:
         data = self.cursor.execute('SELECT * FROM photo')
         response = []
         for i in data.fetchall():
-            response.append({"id": i[0], "url": i[1], "contributor": i[2]})
+            response.append({"id": i[0], "url": i[1], "url_file": i[2], "contributor": i[3]})
         return (json.loads(json.dumps(response)))
 
     def _render_photos(self):
