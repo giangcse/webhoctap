@@ -41,7 +41,7 @@ class Via_Telegram:
                 elif(i==3):
                     content += str(ranks[2]) + '  @' + u['contributor'] + ' với ' + str(u['amount']) + ' đóng góp.\n'
                 else:
-                    content += str(i) + '  @' + u['contributor'] + ' với ' + str(u['amount']) + ' đóng góp.\n'
+                    content += ' ' + str(i) + '  @' + u['contributor'] + ' với ' + str(u['amount']) + ' đóng góp.\n'
                 i+=1
             self.bot.reply_to(message, content)
         #Handle message /remove
