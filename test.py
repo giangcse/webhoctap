@@ -1,24 +1,26 @@
-from turtle import title
 import requests
-from bs4 import BeautifulSoup
+import telebot
 
-reqUrl = "https://www.tiktok.com/@chiiliiu/video/7134277742723386650"
+token = '2062328204:AAExyf0hNiXoT38pGqSn_ID4qB-PjGHM4kE'
+bot = telebot.TeleBot(token, parse_mode='HTML')
 
-headersList = {
- "Accept": "*/*",
- "User-Agent": "Thunder Client (https://www.thunderclient.com)" 
-}
+def _upload_img(url_img):
+    url = "https://api.imgur.com/3/image"
+    payload={'image': url_img}
+    files=[]
+    headers = {
+    'Authorization': 'Client-ID 306f7cc6448a694'
+    }
 
-payload = ""
+    response = requests.request("POST", url, headers=headers, data=payload, files=files)
+    print(response.text)
 
-def get_video(url):
-    try:
-        response = requests.request("GET", reqUrl, data=payload,  headers=headersList)
-        data = BeautifulSoup(response.text, 'html5lib')
-        title = data.title
-        thumbnails = data.find("meta", attrs={'property': 'og:image'}).attrs['content']
-        print(title, thumbnails)
-    except Exception as e:
-        print(e)
+# Handles all sent documents and audio files
+@bot.message_handler(content_types=['photo'])
+def handle_photo(message):
+    file = bot.get_file(message.photo[-1].file_id)
+    print('https://api.telegram.org/file/bot'+token+'/'+file.file_path)
+    _upload_img('https://api.telegram.org/file/bot'+token+'/'+file.file_path)
 
-get_video(reqUrl)
+if __name__=='__main__':
+    bot.infinity_polling()

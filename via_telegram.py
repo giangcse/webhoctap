@@ -56,6 +56,10 @@ class Via_Telegram:
         @self.bot.message_handler(commands=['update'])
         def update(message):
             self._update(message)
+        # Handle photo
+        @self.bot.message_handler(content_types=['photo', 'document'])
+        def handle_photo(message):
+            self._upload_image(message)
         # Khởi tạo thông tin kết nối đến Database
         self.database = 'data.db'
         self.connection_db = sqlite3.connect(self.database, check_same_thread=False)
@@ -250,6 +254,29 @@ class Via_Telegram:
             except Exception as e:
                 print(e)
 
+    # Hàm upload hình ảnh
+    def _upload_image(self, message):
+        try:
+            file = self.bot.get_file(message.photo[-1].file_id)
+            url_img = 'https://api.telegram.org/file/bot'+self.bot_token+'/'+file.file_path
+            url = "https://api.imgur.com/3/image"
+            payload={'image': url_img}
+            files=[]
+            headers = {
+            'Authorization': 'Client-ID 306f7cc6448a694'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload, files=files)
+            res = json.loads(response.text)
+
+            if(int(res['status']) == 200):
+                contributor = str(message.from_user.username)
+                url_imgur = res['data']['link']
+                self.cursor.execute('INSERT INTO photo (URL, CONTRIBUTORS) VALUES (?, ?)', (url_imgur, contributor))
+                self.connection_db.commit()
+                self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
+        except Exception:
+            self.bot.reply_to(message, 'Thêm ảnh không thành công, vui lòng chọn hình ảnh và chọn "Compress images".')
 
 if __name__ == '__main__':
     via_tele = Via_Telegram()

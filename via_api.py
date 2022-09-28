@@ -43,6 +43,11 @@ class Via_api:
         @self.app.get("/videos", response_class=HTMLResponse)
         async def render_videos():
             return self._render_videos()
+        # Render trang video
+        @self.app.get("/photos", response_class=HTMLResponse)
+        async def render_photos():
+            return self._render_photos()
+
         # Khởi tạo kết nối đến db
         self.database = 'data.db'
         self.connection_db = sqlite3.connect(self.database, check_same_thread=False)
@@ -54,14 +59,6 @@ class Via_api:
         for i in data.fetchall():
             response.append({"id": i[0], "url": i[1], "user_name": i[2], "url_pic": i[3], "contributor": i[4]})
         return (json.loads(json.dumps(response)))
-
-    def _get_videos(self):
-        data = self.cursor.execute('SELECT * FROM video')
-        response = []
-        for i in data.fetchall():
-            response.append({"id": i[0], "url": i[1], "title": i[2], "thumbnail": i[3], "contributor": i[4]})
-        return (json.loads(json.dumps(response)))
-
     
     def _render_index(self):
         html_content = """
@@ -106,6 +103,9 @@ class Via_api:
                                     <a class="nav-link" aria-current="page" href="/videos">Videos</a>
                                 </li>
                                 <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" href="/photos">Hình ảnh</a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link" aria-current="page" href="https://t.me/giangvirtualassistantbot">Đóng góp</a>
                                 </li>
                             </ul>
@@ -137,7 +137,6 @@ class Via_api:
                 <script>
                     loadData();
                     function loadData(){
-                        //let str = '';
                         let str_in = '';
                         let str_ti = '';
                         let insta = '<i class="bi bi-instagram"></i> ';
@@ -160,7 +159,7 @@ class Via_api:
                                     }else if(link.includes("tiktok")){
                                         str_ti += '<a class="col-sm-2" href="'+element.url+'" style="color: #ffffff;" target="_blank"><div class="card mb-2"><img src="'+element.url_pic+'" class="card-img-top"><div class="card-img-overlay">'+icon+' '+element.user_name+'<br>ID: '+element.id+'</div></div></a>';
                                     }
-                                    //str += '<a class="col-sm-2" href="'+element.url+'" style="color: #ffffff;" target="_blank"><div class="card mb-2"><img src="'+element.url_pic+'" class="card-img-top"><div class="card-img-overlay">'+icon+' '+element.user_name+'<br>ID: '+element.id+'</div></div></a>';
+                                    
                                 });
                                 if(filter == 'instagram')
                                     document.getElementById("main").innerHTML = str_in;
@@ -174,6 +173,13 @@ class Via_api:
             </html>
         """
         return HTMLResponse(content=html_content, status_code=200)
+
+    def _get_videos(self):
+        data = self.cursor.execute('SELECT * FROM video')
+        response = []
+        for i in data.fetchall():
+            response.append({"id": i[0], "url": i[1], "title": i[2], "thumbnail": i[3], "contributor": i[4]})
+        return (json.loads(json.dumps(response)))
 
     def _render_videos(self):
         html_content = """
@@ -218,6 +224,9 @@ class Via_api:
                                     <a class="nav-link active" aria-current="page" href="#">Videos</a>
                                 </li>
                                 <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" href="/photos">Hình ảnh</a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link" aria-current="page" href="https://t.me/giangvirtualassistantbot">Đóng góp</a>
                                 </li>
                             </ul>
@@ -259,15 +268,109 @@ class Via_api:
                             }
                         });
                     }
-                    function direct(url) {
-                        window.location.replace(url);
-                        alert(url);
-                    }
                 </script>
             </html>
         """
         return HTMLResponse(content=html_content, status_code=200)
 
+    def _get_photos(self):
+        data = self.cursor.execute('SELECT * FROM photo')
+        response = []
+        for i in data.fetchall():
+            response.append({"id": i[0], "url": i[1], "contributor": i[2]})
+        return (json.loads(json.dumps(response)))
+
+    def _render_photos(self):
+        html_content = """
+            <!doctype html>
+            <html lang="en">
+            <head>
+                <!-- Required meta tags -->
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                
+                <!-- Bootstrap CSS -->
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.js" integrity="sha512-CX7sDOp7UTAq+i1FYIlf9Uo27x4os+kGeoT7rgwvY+4dmjqV0IuE/Bl5hVsjnQPQiTOhAX1O2r2j5bjsFBvv/A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+                <style>
+                    a:link {
+                        text-decoration: none;
+                    }
+                    a:hover {
+                        text-decoration: none;
+                    }
+
+                    .card:hover{
+                        opacity: 80%;
+                    }
+                </style>
+                <title>Hình ảnh | Tài liệu học tập</title>
+            </head>
+            <body>
+                <nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
+                    <div class="container">
+                        <a class="navbar-brand" href="#">TÀI LIỆU HỌC TẬP <i class="bi bi-badge-4k-fill"></i></a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarText">
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" href="/">Profiles</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" href="/videos">Videos</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="#">Hình ảnh</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" href="https://t.me/giangvirtualassistantbot">Đóng góp</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+                <main>
+                    <div class="container position-relative overflow-hidden p-3">
+                        <figure class="text-end">
+                            <blockquote class="blockquote">
+                                <!--<p>Gõ /update trên <a href="https://t.me/giangvirtualassistantbot">Telegram</a> nếu mất một số ảnh.</p>-->
+                            </blockquote>
+                            <figcaption class="blockquote-footer" id="soLuong">
+                            </figcaption>
+                        </figure>
+                        <div class="row" id="main">
+                            
+                        </div>
+                    </div>
+                </main>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+            </body>
+                <script>
+                    loadPhotos();
+                    function loadPhotos(){
+                        let str = '';
+                        $.ajax({
+                            url: '/get_photos',
+                            data: '',
+                            type: 'GET',
+                            success: function(data){
+                                data = eval(data)
+                                data.forEach(element => {
+                                    element;
+                                    str += '<a class="col-sm-3" href="'+element.url+'" style="color: #ffffff;" target="_blank"><div class="card mb-2"><img src="'+element.url+'" class="card-img-top" ><div class="card-img-overlay"><i class="bi bi-badge-hd-fill"></i></div></div></a>';
+                                });
+                                document.getElementById("main").innerHTML = str;
+                                document.getElementById("soLuong").innerText = 'Hiện tại đã có ' + data.length + ' đóng góp từ các vị anh hùng';
+                            }
+                        });
+                    }
+                </script>
+            </html>
+        """
+        return HTMLResponse(content=html_content, status_code=200)
 
 via_api = Via_api()
 if __name__=='__main__':
