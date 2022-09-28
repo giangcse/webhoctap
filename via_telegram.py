@@ -200,8 +200,15 @@ class Via_Telegram:
         if("/remove" in str(message.text).lower()):
             try:
                 if(str(message.text).split(" ")[1] != ''):
-                    ID = int(str(message.text).split(" ")[1])
-                    self.cursor.execute('DELETE FROM main WHERE ID = ?', (ID,))
+                    if(str(message.text).split(" ")[1] == 'profile'):
+                        ID = int(str(message.text).split(" ")[2])
+                        self.cursor.execute('DELETE FROM main WHERE ID = ?', (ID,))
+                    elif(str(message.text).split(" ")[1] == 'clip'):
+                        ID = int(str(message.text).split(" ")[2])
+                        self.cursor.execute('DELETE FROM video WHERE ID = ?', (ID,))
+                    elif(str(message.text).split(" ")[1] == 'photo'):
+                        ID = int(str(message.text).split(" ")[2])
+                        self.cursor.execute('DELETE FROM photo WHERE ID = ?', (ID,))
                     self.connection_db.commit()
                     self.bot.reply_to(message, 'Xoá thành công!')
                 else:
@@ -224,7 +231,7 @@ class Via_Telegram:
     # Giới thiệu bot
     def _about(self, message):
         if('/start' in str(message.text)):
-            self.bot.reply_to(message, "Xin chào <b>" + str(message.from_user.first_name) + "</b>,\n\nMình là bot hỗ trợ học tập. Bạn có thể xem tài liệu học tập tại địa chỉ https://hoctap.giangpt.dev/ hoặc có thể đóng góp thêm tài liệu từ instagram hoặc tiktok thông qua lệnh <pre>/add https://www.instagram.com/abc</pre>")
+            self.bot.reply_to(message, "Xin chào <b>" + str(message.from_user.first_name) + "</b>,\n\n<b>Bạn có thể đóng góp qua những cách sau:</b>\n\t<pre>/add https://instagram.com/abc</pre> để thêm profile Instagram.\n\t<pre>/add https://www.tiktok.com/@abc</pre> để thêm profile TikTok.\n\t<pre>/clip https://vt.tiktok.com/abc</pre> để thêm video Tiktok\n\tHoặc có thể gửi ảnh cho bot, lưu ý nhớ chọn <pre>Compress Images</pre>.\n<b>Xoá:</b>\n\t <pre>/remove profile 1</pre> để xoá profile có ID là 1.\n\t<pre>/remove clip 1</pre> để xoá video TikTok có ID là 1.\n\t<pre>/remove photo 1</pre> để xoá ảnh có ID là 1.\n<b>Cập nhật:</b>\n\t<pre>/update</pre> để cập nhật nếu website lỗi hiển thị ảnh profile.\n<b>Danh sách đóng góp</b>\n\t<pre>/rank</pre> để hiển thị danh sách những người đã đóng góp.")
 
     # Cập nhật DB khi avatar lỗi
     def _update(self, message):
