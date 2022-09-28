@@ -221,7 +221,7 @@ class Via_Telegram:
         if('/rank' in str(message.text).lower()):
             try:
                 rank_users = []
-                result_profiles = self.cursor.execute('select count(CONTRIBUTORS), CONTRIBUTORS from (select CONTRIBUTORS from main union select CONTRIBUTORS from video union select CONTRIBUTORS from photo) group by CONTRIBUTORS')
+                result_profiles = self.cursor.execute('select count(CONTRIBUTORS), CONTRIBUTORS from (select a.CONTRIBUTORS, a.URL from main a union select b.CONTRIBUTORS, b.URL from video b union select c.CONTRIBUTORS, c.URL from photo c) group by CONTRIBUTORS')
                 for u in result_profiles.fetchall():
                     rank_users.append({"contributor": u[1], "amount": u[0]})
                 return sorted(rank_users, key=lambda d: d['amount'], reverse=True) 
