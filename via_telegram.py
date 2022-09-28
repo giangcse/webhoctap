@@ -231,7 +231,7 @@ class Via_Telegram:
     # Giới thiệu bot
     def _about(self, message):
         if('/start' in str(message.text)):
-            self.bot.reply_to(message, "Xin chào <b>" + str(message.from_user.first_name) + "</b>,\n\n<b>Bạn có thể đóng góp qua những cách sau:</b>\n\t<pre>/add https://instagram.com/abc</pre> để thêm profile Instagram.\n\t<pre>/add https://www.tiktok.com/@abc</pre> để thêm profile TikTok.\n\t<pre>/clip https://vt.tiktok.com/abc</pre> để thêm video Tiktok\n\tHoặc có thể gửi ảnh cho bot, lưu ý nhớ chọn <pre>Compress Images</pre>.\n<b>Xoá:</b>\n\t <pre>/remove profile 1</pre> để xoá profile có ID là 1.\n\t<pre>/remove clip 1</pre> để xoá video TikTok có ID là 1.\n\t<pre>/remove photo 1</pre> để xoá ảnh có ID là 1.\n<b>Cập nhật:</b>\n\t<pre>/update</pre> để cập nhật nếu website lỗi hiển thị ảnh profile.\n<b>Danh sách đóng góp</b>\n\t<pre>/rank</pre> để hiển thị danh sách những người đã đóng góp.")
+            self.bot.reply_to(message, "Xin chào <b>" + str(message.from_user.first_name) + "</b>,\n\n<b>Thêm profile Instagram</b>\n<pre>/add https://instagram.com/abc</pre>\n<b>Thêm profile TikTok</b>\n<pre>/add https://www.tiktok.com/@abc</pre>\n<b>Thêm video TikTok</b>\n<pre>/clip https://vt.tiktok.com/abc</pre>\n<b>Hoặc có thể gửi ảnh cho bot, lưu ý nhớ chọn <em>Compress Images</em>.\n<b>Xoá profile</b>\n<pre>/remove profile [ID]</pre>\n<b>Xoá video</b>\n<pre>/remove clip [ID]</pre>\n<b>Xoá ảnh</b>\n<pre>/remove photo [ID]</pre>\n<b>Cập nhật </b><pre>/update</pre>\n<b>Danh sách đóng góp</b>\n<pre>/rank</pre>")
 
     # Cập nhật DB khi avatar lỗi
     def _update(self, message):
