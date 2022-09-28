@@ -1,8 +1,14 @@
 import requests
-import telebot
+import os
+import base64
+import json
+import sqlite3
+import time
 
-token = '2062328204:AAExyf0hNiXoT38pGqSn_ID4qB-PjGHM4kE'
-bot = telebot.TeleBot(token, parse_mode='HTML')
+from bs4 import BeautifulSoup
+
+conn = sqlite3.connect('data.db')
+cursor = conn.cursor()
 
 def _upload_img(url_img):
     url = "https://api.imgur.com/3/image"
@@ -13,14 +19,36 @@ def _upload_img(url_img):
     }
 
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    print(response.text)
+    res = json.loads(response.text)
+    print(res)
+    url_imgur = res['data']['link']
+    cursor.execute('INSERT INTO photo (URL, CONTRIBUTORS) VALUES (?, ?)', (url_imgur, 'giangptvlg'))
+    conn.commit()
 
-# Handles all sent documents and audio files
-@bot.message_handler(content_types=['photo'])
-def handle_photo(message):
-    file = bot.get_file(message.photo[-1].file_id)
-    print('https://api.telegram.org/file/bot'+token+'/'+file.file_path)
-    _upload_img('https://api.telegram.org/file/bot'+token+'/'+file.file_path)
+def _get_url(no):
+    reqUrl = 'https://giangthur97.gumroad.com/products/search?user_id=6980412128632&from='+str(no)
+    headersList = {
+        "Accept": "*/*",
+        "User-Agent": "Thunder Client (https://www.thunderclient.com)" 
+    }
+    payload = ""
+    response = requests.request("GET", reqUrl, data=payload,  headers=headersList)
+    for i in (json.loads(response.text)['products']):
+        _get_image(i['url'])
+
+def _get_image(url):
+    headersList = {
+        "Accept": "*/*",
+        "User-Agent": "Thunder Client (https://www.thunderclient.com)" 
+    }
+    payload = ""
+    response = requests.request("GET", url, data=payload,  headers=headersList)
+    data = BeautifulSoup(response.text, 'html5lib')
+    for link in data.find_all('link', href=True):
+        if('image' in str(link)):
+            _upload_img(link['href'])
 
 if __name__=='__main__':
-    bot.infinity_polling()
+    for i in range(1, 106, 9):
+        _get_url(i)
+        time.sleep(15)
