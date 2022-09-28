@@ -372,7 +372,7 @@ class Via_api:
                                 data = eval(data)
                                 data.forEach(element => {
                                     element;
-                                    str += '<div class="col-sm-3" style="color: #ffffff;"><div class="card mb-2"><img src="'+element.url+'" class="card-img-top" ><div class="card-img-overlay"><a href="'+element.url+'" style="color: #ffffff;"><i class="bi bi-download"></i></a> ID: '+element.id+'</div></div></div>';
+                                    str += '<div class="col-sm-3" style="color: #ffffff;"><div class="card mb-2"><img src="'+element.url+'" class="card-img-top" ><div class="card-img-overlay"><a href="'+element.url_file+'" style="color: #ffffff;"><i class="bi bi-download"></i></a> ID: '+element.id+'</div></div></div>';
                                 });
                                 document.getElementById("main").innerHTML = str;
                                 document.getElementById("soLuong").innerText = 'Hiện tại đã có ' + data.length + ' đóng góp từ các vị anh hùng';
