@@ -231,7 +231,7 @@ class Via_Telegram:
     # Giới thiệu bot
     def _about(self, message):
         if('/start' in str(message.text)):
-            self.bot.reply_to(message, "Xin chào <b>" + str(message.from_user.first_name) + "</b>,\n\n<b>Thêm profile Instagram</b>\n<pre>/add https://instagram.com/abc</pre>\n<b>Thêm profile TikTok</b>\n<pre>/add https://www.tiktok.com/@abc</pre>\n<b>Thêm video TikTok</b>\n<pre>/clip https://vt.tiktok.com/abc</pre>\n<b>Hoặc có thể gửi ảnh cho bot, lưu ý nhớ chọn <em>Compress Images</em>.\n<b>Xoá profile</b>\n<pre>/remove profile [ID]</pre>\n<b>Xoá video</b>\n<pre>/remove clip [ID]</pre>\n<b>Xoá ảnh</b>\n<pre>/remove photo [ID]</pre>\n<b>Cập nhật </b><pre>/update</pre>\n<b>Danh sách đóng góp</b>\n<pre>/rank</pre>")
+            self.bot.reply_to(message, "Xin chào <b>" + str(message.from_user.first_name) + "</b>,\n\n<b>Thêm profile Instagram</b>\n<pre>/add https://instagram.com/USERNAME</pre>\n<b>Thêm profile TikTok</b>\n<pre>/add https://www.tiktok.com/@USERNAME</pre>\n<b>Thêm video TikTok</b>\n<pre>/clip https://vt.tiktok.com/ID_VIDEO</pre>\n<b>Hoặc có thể gửi ảnh cho bot, lưu ý nhớ chọn </b><em>Compress Images</em>.\n<b>Xoá profile</b>\n<pre>/remove profile [ID]</pre>\n<b>Xoá video</b>\n<pre>/remove clip [ID]</pre>\n<b>Xoá ảnh</b>\n<pre>/remove photo [ID]</pre>\n<b>Cập nhật </b><pre>/update</pre>\n<b>Danh sách đóng góp</b>\n<pre>/rank</pre>")
 
     # Cập nhật DB khi avatar lỗi
     def _update(self, message):
