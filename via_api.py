@@ -34,6 +34,13 @@ class Via_api:
         async def get_videos():
             respone = self._get_videos()
             return respone
+
+        # Khởi tạo hàm get videos
+        @self.app.get('/get_photos')
+        async def get_photos():
+            respone = self._get_photos()
+            return respone
+
         # Render trang index
         @self.app.get("/", response_class=HTMLResponse)
         async def render_index():
@@ -304,6 +311,11 @@ class Via_api:
                     .card:hover{
                         opacity: 80%;
                     }
+                    .card-img-top {
+                        width: 100%;
+                        height: 20vw;
+                        object-fit: cover;
+                    }
                 </style>
                 <title>Hình ảnh | Tài liệu học tập</title>
             </head>
@@ -360,7 +372,7 @@ class Via_api:
                                 data = eval(data)
                                 data.forEach(element => {
                                     element;
-                                    str += '<a class="col-sm-3" href="'+element.url+'" style="color: #ffffff;" target="_blank"><div class="card mb-2"><img src="'+element.url+'" class="card-img-top" ><div class="card-img-overlay"><i class="bi bi-badge-hd-fill"></i></div></div></a>';
+                                    str += '<div class="col-sm-3"><div class="card mb-2"><img src="'+element.url+'" class="card-img-top" ><div class="card-img-overlay"><a href="'+element.url+'" style="color: #ffffff;"><i class="bi bi-download"></i></a></div></div></div>';
                                 });
                                 document.getElementById("main").innerHTML = str;
                                 document.getElementById("soLuong").innerText = 'Hiện tại đã có ' + data.length + ' đóng góp từ các vị anh hùng';
