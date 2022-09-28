@@ -252,7 +252,7 @@ class Via_Telegram:
                         self.cursor.execute('DELETE FROM main WHERE ID = ?', (id,))
                         self.connection_db.commit()
                         self._get_info_instagram_bs4(url, contributor)
-                    elif(BeautifulSoup(response.text, 'html5lib').title == 'Access Denied'):
+                    elif(int(response.status_code) == 403):
                         self.cursor.execute('DELETE FROM main WHERE ID = ?', (id,))
                         self.connection_db.commit()
                         self._get_info_tiktok(url, contributor)

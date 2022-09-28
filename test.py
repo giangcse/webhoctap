@@ -29,7 +29,7 @@ def _upload_img(url_img):
         conn.commit()
         return True
     else:
-        return False
+        time.sleep(3600)
 
 def _get_url(no):
     reqUrl = 'https://giangthur97.gumroad.com/products/search?user_id=6980412128632&from='+str(no)
