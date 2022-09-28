@@ -279,7 +279,7 @@ class Via_Telegram:
             if(int(res['status']) == 200):
                 contributor = str(message.from_user.username)
                 url_imgur = res['data']['link']
-                self.cursor.execute('INSERT INTO photo (URL, CONTRIBUTORS) VALUES (?, ?)', (url_imgur, contributor))
+                self.cursor.execute('INSERT INTO photo (URL, URL_FILE, CONTRIBUTORS) VALUES (?, ?, ?)', (url_imgur, url_imgur, contributor))
                 self.connection_db.commit()
                 self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
         except Exception:
