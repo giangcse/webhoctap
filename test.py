@@ -47,8 +47,8 @@ def _get_image(url):
     for link in data.find_all('link', href=True):
         if('image' in str(link)):
             _upload_img(link['href'])
+        time.sleep(15)
 
 if __name__=='__main__':
     for i in range(1, 106, 9):
         _get_url(i)
-        time.sleep(15)
