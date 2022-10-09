@@ -264,7 +264,7 @@ class Via_Telegram:
     # Hàm upload hình ảnh
     def _upload_image(self, message):
         try:
-            if('/pic' in str(message.text)):
+            # if('/pic' in str(message.text)):
                 file = self.bot.get_file(message.photo[-1].file_id)
                 url_img = 'https://api.telegram.org/file/bot'+self.bot_token+'/'+file.file_path
                 url = "https://api.imgur.com/3/image"
