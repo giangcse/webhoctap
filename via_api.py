@@ -281,7 +281,7 @@ class Via_api:
         return HTMLResponse(content=html_content, status_code=200)
 
     def _get_photos(self):
-        data = self.cursor.execute('SELECT * FROM photo')
+        data = self.cursor.execute('SELECT * FROM photo ORDER BY ID DESC')
         response = []
         for i in data.fetchall():
             response.append({"id": i[0], "url": i[1], "url_file": i[2], "contributor": i[3]})
