@@ -134,6 +134,25 @@ class Via_Telegram:
         except Exception as e:
             return 0
 
+    # Get dữ liệu từ Facebook
+    def _get_info_facebook(self, url_facebook, contributor):
+        try:
+            self.driver = webdriver.Chrome(executable_path = '/usr/lib/chromium-browser/chromedriver', chrome_options=self.options)
+            self.driver.get(url_facebook)
+            profile_picture = self.driver.find_element(By.XPATH, '//*[@id="mount_0_0_Z2"]/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div/div/div[1]/div[2]/div/div/div/div[1]/div/a/div/svg/g/image').get_attribute("xlink:href")
+            title = self.driver.title
+            user_name = str(title)[:str(title).index("|")]
+
+            result = self.cursor.execute('SELECT COUNT(URL) FROM main WHERE URL = ?', (str(url_facebook),))
+            if (int(result.fetchone()[0]) == 0):
+                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_facebook, user_name.strip(), profile_picture, contributor))
+                self.connection_db.commit()
+                return 1    
+            else:
+                return 0
+        except Exception as e:
+            return 0
+
     # Get dữ liệu video tiktok
     def _get_video_tiktok(self, url_tiktok, contributor):
         try:
@@ -171,6 +190,12 @@ class Via_Telegram:
                             self.bot.reply_to(message, "Ops! Server đã bị Instagram block IP do có quá nhiều request trong khoản thời gian ngắn. Bạn vui lòng thêm lại sau vài giờ nhé!")
                     elif('tiktok' in str(url).lower()):
                         result = self._get_info_tiktok(url, contributor)
+                        if result == 1:
+                            self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
+                        elif result == 0:
+                            self.bot.reply_to(message, "Sorry bạn, hình như profile đã được vị cao nhân nào đó đóng góp trước. Cảm ơn sự đóng góp của bạn!")
+                    elif('facebook' in str(url).lower()):
+                        result = self._get_info_facebook(url, contributor)
                         if result == 1:
                             self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
                         elif result == 0:
