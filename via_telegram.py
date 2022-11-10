@@ -86,7 +86,7 @@ class Via_Telegram:
             url_pic = (str(data)[idx+19:idx+500].split('"')[0].replace('\\', ''))
             result = self.cursor.execute('SELECT COUNT(URL) FROM main WHERE URL = ?', (str(url_instagram).split('?')[0],))
             if (int(result.fetchone()[0]) == 0):
-                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (str(url_instagram).split('?')[0], info.strip(), url_pic, contributor))
+                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (str(url_instagram).split('?')[0], info.strip(), self._upload_avatar(url_pic), contributor))
                 self.connection_db.commit()
                 return 1
             else:
@@ -107,7 +107,7 @@ class Via_Telegram:
 
             result = self.cursor.execute('SELECT COUNT(URL) FROM main WHERE URL = ?', (str(url_instagram),))
             if (int(result.fetchone()[0]) == 0):
-                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_instagram, uname.strip(), url_pic, contributor))
+                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_instagram, uname.strip(), self._upload_avatar(url_pic), contributor))
                 self.connection_db.commit()
                 return 1    
             else:
@@ -126,7 +126,7 @@ class Via_Telegram:
 
             result = self.cursor.execute('SELECT COUNT(URL) FROM main WHERE URL = ?', (str(url_tiktok),))
             if (int(result.fetchone()[0]) == 0):
-                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_tiktok, user_name.strip(), profile_picture, contributor))
+                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_tiktok, user_name.strip(), self._upload_avatar(profile_picture), contributor))
                 self.connection_db.commit()
                 return 1    
             else:
@@ -145,7 +145,7 @@ class Via_Telegram:
 
             result = self.cursor.execute('SELECT COUNT(URL) FROM main WHERE URL = ?', (str(url_facebook),))
             if (int(result.fetchone()[0]) == 0):
-                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_facebook, user_name.strip(), profile_picture, contributor))
+                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_facebook, user_name.strip(), self._upload_avatar(profile_picture), contributor))
                 self.connection_db.commit()
                 return 1    
             else:
@@ -165,7 +165,7 @@ class Via_Telegram:
             result = self.cursor.execute('SELECT COUNT(URL) FROM video WHERE URL = ?', (str(url_tiktok),))
 
             if(int(result.fetchone()[0]) == 0):
-                self.cursor.execute('INSERT INTO video (URL, TITLE, THUMBNAIL, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_tiktok, title, thumbnail, contributor))
+                self.cursor.execute('INSERT INTO video (URL, TITLE, THUMBNAIL, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (url_tiktok, title, self._upload_image(thumbnail), contributor))
                 self.connection_db.commit()
                 return (1)
             else:
@@ -310,6 +310,25 @@ class Via_Telegram:
                     self.bot.reply_to(message, "🌟<b>XIN CHÂN THÀNH CẢM ƠN SỰ ĐÓNG GÓP CỦA BẠN</b>🌟\nCảm ơn sự đóng góp của bạn làm cho cộng đồng ngày càng phát triển, đời sống của anh em được cải thiện.\nXin vinh danh sự đóng góp này, bravo!!!")
         except Exception:
             self.bot.reply_to(message, 'Thêm ảnh không thành công, vui lòng chọn hình ảnh và chọn "Compress images".')
+    
+    # Hàm upload ảnh avatar
+    def _upload_avatar(self, url_img):
+        try:
+            # if('/pic' in str(message.text)):
+                url = "https://api.imgur.com/3/image"
+                payload={'image': url_img}
+                files=[]
+                headers = {
+                'Authorization': 'Client-ID 306f7cc6448a694'
+                }
+
+                response = requests.request("POST", url, headers=headers, data=payload, files=files)
+                res = json.loads(response.text)
+
+                if(int(res['status']) == 200):
+                    return res['data']['link']
+        except Exception:
+            return False
 
 if __name__ == '__main__':
     via_tele = Via_Telegram()
