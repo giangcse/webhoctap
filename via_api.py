@@ -386,5 +386,5 @@ class Via_api:
 
 via_api = Via_api()
 if __name__=='__main__':
-    via_api.run()
+    uvicorn.run('via_api:via_api.app', host='0.0.0.0', port=80, reload=True)
 
