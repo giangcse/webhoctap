@@ -1,5 +1,4 @@
 import json
-import uvicorn
 import sqlite3
 
 from fastapi import FastAPI, File, UploadFile, Form
@@ -385,6 +384,5 @@ class Via_api:
         return HTMLResponse(content=html_content, status_code=200)
 
 via_api = Via_api()
-if __name__=='__main__':
-    uvicorn.run('via_api:via_api.app', host='0.0.0.0', port=80, reload=True)
+
 
