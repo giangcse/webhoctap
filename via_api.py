@@ -1,8 +1,10 @@
 import json
 import sqlite3
+import requests
 
+from bs4 import BeautifulSoup
 from fastapi import FastAPI, File, UploadFile, Form
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi import responses
@@ -21,8 +23,6 @@ class Via_api:
             allow_methods=['*'],
             allow_headers=['*']
         )
-        self.host = '0.0.0.0'
-        self.port = 80
         # Khởi tạo hàm get data
         @self.app.get('/get_data')
         async def get_data():
@@ -53,7 +53,11 @@ class Via_api:
         @self.app.get("/photos", response_class=HTMLResponse)
         async def render_photos():
             return self._render_photos()
-
+        # Add new Instagram
+        @self.app.get('/add', response_class=HTMLResponse)
+        async def add_instagram(url: str):
+            self._get_info_instagram_bs4(url)
+            return self._render_index()
         # Khởi tạo kết nối đến db
         self.database = 'data.db'
         self.connection_db = sqlite3.connect(self.database, check_same_thread=False)
@@ -66,6 +70,28 @@ class Via_api:
             response.append({"id": i[0], "url": i[1], "user_name": i[2], "url_pic": i[3], "contributor": i[4]})
         return (json.loads(json.dumps(response)))
     
+        # Get dữ liệu từ Instagram
+    def _get_info_instagram_bs4(self, url_instagram):
+        headersList = {
+            "Accept": "*/*",
+        }
+        payload = ""
+        try:
+            response = requests.request("GET", url_instagram, data=payload,  headers=headersList)
+            data = BeautifulSoup(response.text, "html5lib")
+            info = str(data.title).split('•')[0][7:]
+
+            idx = (str(data).index('"profile_pic_url":'))
+            url_pic = (str(data)[idx+19:idx+500].split('"')[0].replace('\\', ''))
+            result = self.cursor.execute('SELECT COUNT(URL) FROM main WHERE URL = ?', (str(url_instagram).split('?')[0],))
+            if (int(result.fetchone()[0]) == 0):
+                self.cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (str(url_instagram).split('?')[0], info.strip(), url_pic, 'website'))
+                self.connection_db.commit()
+            # return JSONResponse(status_code=200, content={"result": "success"})
+        except Exception as e:
+            # return JSONResponse(status_code=500, content={"error": e})
+            print(e)
+
     def _render_index(self):
         html_content = """
             <!doctype html>

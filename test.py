@@ -1,68 +1,36 @@
-import requests
-import os
-import base64
-import json
+import pandas as pd
 import sqlite3
+import requests
 import time
 
 from bs4 import BeautifulSoup
 
-conn = sqlite3.connect('data.db')
+conn = sqlite3.Connection('data.db')
 cursor = conn.cursor()
 
-links = []
-
-def _upload_img(url_img):
-    url = "https://api.imgur.com/3/image"
-    payload={'image': url_img}
-    files=[]
-    headers = {
-    'Authorization': 'Client-ID 306f7cc6448a694'
-    }
-
-    response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    res = json.loads(response.text)
-    print(res)
-    if(res['status'] == 200):
-        url_imgur = res['data']['link']
-        cursor.execute('INSERT INTO photo (URL, URL_FILE, CONTRIBUTORS) VALUES (?, ?, ?)', (url_imgur, url_img, 'giangptvlg'))
-        conn.commit()
-        return True
-    else:
-        time.sleep(3600)
-
-def _get_url(no):
-    reqUrl = 'https://giangthur97.gumroad.com/products/search?user_id=6980412128632&from='+str(no)
+def _get_info_instagram_bs4( url_instagram):
     headersList = {
         "Accept": "*/*",
-        "User-Agent": "Thunder Client (https://www.thunderclient.com)" 
     }
     payload = ""
-    response = requests.request("GET", reqUrl, data=payload,  headers=headersList)
-    for i in (json.loads(response.text)['products']):
-        _get_image(i['url'])
+    try:
+        response = requests.request("GET", url_instagram, data=payload,  headers=headersList)
+        data = BeautifulSoup(response.text, "html5lib")
+        info = str(data.title).split('•')[0][7:]
 
-def _get_image(url):
-    headersList = {
-        "Accept": "*/*",
-        "User-Agent": "Thunder Client (https://www.thunderclient.com)" 
-    }
-    payload = ""
-    response = requests.request("GET", url, data=payload,  headers=headersList)
-    data = BeautifulSoup(response.text, 'html5lib')
-    for link in data.find_all('link', href=True):
-        if('image' in str(link)):
-            cursor.execute('INSERT INTO links (URL) VALUES (?)', (link['href'],))
+        idx = (str(data).index('"profile_pic_url":'))
+        url_pic = (str(data)[idx+19:idx+500].split('"')[0].replace('\\', ''))
+        result = cursor.execute('SELECT COUNT(URL) FROM main WHERE URL = ?', (str(url_instagram).split('?')[0],))
+        if (int(result.fetchone()[0]) == 0):
+            cursor.execute('INSERT INTO main (URL, USERNAME, URL_PIC, CONTRIBUTORS) VALUES(?, ?, ?, ?)', (str(url_instagram).split('?')[0], info.strip(), url_pic, 'website'))
             conn.commit()
+        # return JSONResponse(status_code=200, content={"result": "success"})
+    except Exception as e:
+        # return JSONResponse(status_code=500, content={"error": e})
+        print(e)
 
+df = pd.DataFrame(pd.read_csv('output.csv', encoding='utf8'))
 
-if __name__=='__main__':
-    for i in cursor.execute('SELECT * FROM links').fetchall():
-        result = _upload_img(i[1])
-        if result:
-            cursor.execute('DELETE FROM links WHERE ID = ?', (int(i[0]),))
-            conn.commit()
-            print('image ID ' + str(i[0]) + ' has been uploaded')
-        else:
-            continue
-        time.sleep(5)
+for i in range(len(df)):
+    _get_info_instagram_bs4(df.iloc[i]['1'])
+    time.sleep(1)

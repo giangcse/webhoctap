@@ -1,0 +1,4 @@
+venv/*
+__pycache__/*
+output.csv
+__pycache__/via_api.cpython-37.pyc
